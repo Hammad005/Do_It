@@ -3,7 +3,7 @@ const colors = {
     bgColor2:'#05243E',
     primary: '#0EA5E9',
     secondary: '#102D53',
-    whiite: '#FFFFFF',
+    white: '#FFFFFF',
     inputFeilds: "#102D53"
 };
 

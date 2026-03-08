@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const Services = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [servicesScreens, setServicesScreens] = useState([
+  const servicesScreens = [
     {
       icon: ICON.CHECKLIST,
       height: 221,
@@ -39,11 +39,11 @@ const Services = () => {
       text: "Your informations are secure with us",
       active: false
     },
-  ])
+  ];
   const navigate = useNavigation();
 
   const handleNext = () => {
-    if (currentIndex === 3) return navigate.replace('Splash') 
+    if (currentIndex === 3) return navigate.replace('Login') 
     setCurrentIndex(prev => prev + 1)
   };
   return (
@@ -51,7 +51,7 @@ const Services = () => {
       colors={[colors.bgColor1, colors.bgColor2]}
       style={styles.container}
     >
-        <ServicesScreenComponents data={servicesScreens} currentIndex={currentIndex}/>
+        <ServicesScreenComponents data={servicesScreens} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} handleNext={handleNext}/>
 
         <View style={styles.navigators}>
 
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   navigators: {
-    marginTop: 30,
+    paddingTop: 60,
     height: "30%",
     width: "100%"
   },
@@ -90,6 +90,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: "absolute",
     zIndex: 1,
-    right: 20
+    right: 20,
+    boxShadow: "0px 4px 15px 2px rgba(255, 255, 255, 25)"
   }
 });

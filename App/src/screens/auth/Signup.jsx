@@ -80,7 +80,7 @@ const Signup = () => {
       <View style={styles.inputContainer}>
         <MaterialIcons name={'lock'} size={30} />
         <TextInput
-          secureTextEntry={showPassword === true ? false : true}
+          secureTextEntry={!showPassword}
           value={authData.password}
           onChangeText={text => setAuthData({ ...authData, password: text })}
           placeholder="Password"
@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingTop: 0,
     paddingBottom: 0,
+    color: "#000",
   },
   btn: {
     backgroundColor: colors.primary,

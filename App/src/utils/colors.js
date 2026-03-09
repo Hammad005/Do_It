@@ -4,6 +4,7 @@ const colors = {
     primary: '#0EA5E9',
     secondary: '#102D53',
     white: '#FFFFFF',
+    authInputPlaceholder: 'rgba(0, 0, 0, 0.44)',
     inputFeilds: "#102D53"
 };
 

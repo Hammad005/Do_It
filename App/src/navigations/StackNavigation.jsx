@@ -9,7 +9,7 @@ import Signup from '../screens/auth/Signup';
 const StackNavigation = () => {
     const Stack = createStackNavigator()
   return (
-    <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }} >
+    <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }} >
       <Stack.Screen name="Splash" component={Splash} />
       <Stack.Screen name="Services" component={Services} />
       <Stack.Screen name="Login" component={Login} />

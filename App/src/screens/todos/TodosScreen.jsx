@@ -4,6 +4,7 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -15,25 +16,21 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { FONTS } from '../../utils/fonts';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const HomeScreen = () => {
-  // Sort: incomplete first, completed last
-  const sortedTodos = [
-    ...todos.filter(item => item.completed === false),
-    ...todos.filter(item => item.completed === true),
-  ];
+const TodosScreen = () => {
 
   const Header = () => {
     return (
       <View style={styles.headerContainer}>
-        <Image
-          source={require('../../assets/user/defaultProfile.png')}
-          style={styles.profileImage}
-          resizeMode="contain"
-          fadeDuration={0}
+        <View style={styles.inputContainer}>
+          <TextInput 
+          placeholder='Search by task title'
+          style={styles.input}
+          />
+          <MaterialIcons
+          name={'search'}
+          size={17}
+          color={'rgba(255, 255, 255, 0.5)'}
         />
-        <View>
-          <Text style={styles.userName}>Hammad Khatri</Text>
-          <Text style={styles.email}>test@mail.com</Text>
         </View>
       </View>
     );
@@ -71,15 +68,11 @@ const HomeScreen = () => {
   };
 
   // Index where completed tasks begin
-  const completedStartIndex = todos.filter(item => !item.completed).length;
   const renderSectionHeader = ({ index }) => {
     if (index === 0) {
       return (
-        <Text style={[styles.heading, { marginTop: 0 }]}>Incomplete Tasks</Text>
+        <Text style={[styles.heading, { marginTop: 0 }]}>Tasks List</Text>
       );
-    }
-    if (index === completedStartIndex) {
-      return <Text style={styles.heading}>Completed Tasks</Text>;
     }
     return null;
   };
@@ -92,7 +85,7 @@ const HomeScreen = () => {
       <SafeAreaView style={{ flex: 1, marginBottom: 60 }}>
         <Header />
         <FlatList
-          data={sortedTodos}
+          data={todos}
           keyExtractor={item => item.title}
           // ListHeaderComponent={Header}
           showsVerticalScrollIndicator={false}
@@ -108,7 +101,7 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+export default TodosScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -127,11 +120,19 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 100,
   },
-  userName: {
-    fontSize: 18,
-    fontFamily: FONTS.SEMIBOLD,
-    color: colors.white,
-    letterSpacing: 1,
+  inputContainer:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: "rgba(16, 45, 83, 0.8)",
+    borderRadius: 10,
+    paddingHorizontal: 10
+  },
+  input: {
+    flexGrow:1,
+    height: 42,
+    borderRadius:10,
+    backgroundColor: "rgba(16, 45, 83, 0.8)",
+    padding: 10,
   },
   email: {
     fontSize: 14,

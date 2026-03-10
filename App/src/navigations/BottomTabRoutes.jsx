@@ -1,4 +1,5 @@
 import HomeScreen from '../screens/Home/HomeScreen';
+import TodosScreen from '../screens/todos/TodosScreen'
 import Settings from "../screens/Settings/Settings"
 import { BottomTabIcons } from '../utils/bottomTabIcons';
 
@@ -11,7 +12,7 @@ const BottomTabRoutes = [
     },
     {
         name: 'Todos',
-        component: HomeScreen,
+        component: TodosScreen,
         icon: BottomTabIcons.TODOS,
         activeIcon: BottomTabIcons.ACTIVE_TODOS
         

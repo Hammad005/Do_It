@@ -73,10 +73,12 @@ const styles = StyleSheet.create({
   icon: {
     width: 33,
     height: 30,
+    marginBottom: 5
   },
   activeIcon: {
     width: 40,
-    height: 45,
+    height: 50,
+    
   },
   activeLine: {
     position: "absolute",

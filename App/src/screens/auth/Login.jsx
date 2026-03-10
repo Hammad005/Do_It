@@ -33,7 +33,7 @@ const Login = () => {
     formData.append('email', authData.email);
     formData.append('password', authData.password);
 
-    Alert.alert('Login');
+    navigate.navigate('HomeMain');
   };
   return (
     <LinearGradient

@@ -2,7 +2,9 @@ import {
   Alert,
   Image,
   KeyboardAvoidingView,
+  Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -32,91 +34,105 @@ const Login = () => {
     formData.append('password', authData.password);
 
     Alert.alert('Login');
-  }
+  };
   return (
-    <KeyboardAvoidingView
-      enabled={true}
-      behavior='height'
-      style={{flex:1}}
+    <LinearGradient
+      colors={[colors.bgColor1, colors.bgColor2]}
+      style={styles.mainContainer}
     >
-      <LinearGradient
-        colors={[colors.bgColor1, colors.bgColor2]}
-        style={styles.container}
-      >
-        <Image
-          source={ICON.LOGO}
-          style={styles.logo}
-          resizeMode="contain"
-          fadeDuration={0}
-        />
-        <View style={styles.textContainer}>
-          <Text style={styles.title}>Welcome Back to</Text>
-          <Text style={styles.titleLogo}>Do It</Text>
-        </View>
-        <Text style={styles.smallText}>Have an other productive day !</Text>
-
-        {/* Email Input */}
-        <View style={styles.inputContainer}>
-          <MaterialIcons name={'mail'} size={30} />
-          <TextInput
-            keyboardType="email-address"
-            value={authData.email}
-            onChangeText={text => setAuthData({ ...authData, email: text })}
-            placeholder="Email"
-            placeholderTextColor={colors.authInputPlaceholder}
-            style={styles.input}
-          />
-        </View>
-
-        {/* Password Input */}
-        <View style={[styles.inputContainer, { marginTop: 56 }]}>
-          <MaterialIcons name={'lock'} size={30} />
-          <TextInput
-            secureTextEntry={!showPassword}
-            value={authData.password}
-            onChangeText={text => setAuthData({ ...authData, password: text })}
-            placeholder="Password"
-            placeholderTextColor={colors.authInputPlaceholder}
-            style={styles.input}
-          />
-          <Pressable onPress={() => setShowPassword(!showPassword)}>
-            <MaterialIcons
-              name={showPassword ? 'visibility' : 'visibility-off'}
-              size={30}
-            />
-          </Pressable>
-        </View>
-
-        <Text style={styles.forgotPassword}>
-          forget password?
-        </Text>
-
-        <TouchableOpacity
-          style={styles.btn}
-          onPress={handleLogin}
-          activeOpacity={0.85}
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+          scrollEnabled={false}
+          style={{ flex: 1 }}
         >
-          <Text style={styles.btnText}>Sign In</Text>
-        </TouchableOpacity>
+          <View style={styles.container}>
+            <Image
+              source={ICON.LOGO}
+              style={styles.logo}
+              resizeMode="contain"
+              fadeDuration={0}
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.title}>Welcome Back to</Text>
+              <Text style={styles.titleLogo}>Do It</Text>
+            </View>
+            <Text style={styles.smallText}>Have an other productive day !</Text>
 
-        <View style={styles.textInLineContainer}>
-          <Text style={styles.text}>Don’t have an account?</Text>
-          <Text style={styles.linkText} onPress={() => navigate.navigate('Signup')}>
-            sign up
-          </Text>
-        </View>
-      </LinearGradient>
-    </KeyboardAvoidingView>
+            {/* Email Input */}
+            <View style={styles.inputContainer}>
+              <MaterialIcons name={'mail'} size={30} />
+              <TextInput
+                keyboardType="email-address"
+                value={authData.email}
+                onChangeText={text => setAuthData({ ...authData, email: text })}
+                placeholder="Email"
+                placeholderTextColor={colors.authInputPlaceholder}
+                style={styles.input}
+              />
+            </View>
+
+            {/* Password Input */}
+            <View style={[styles.inputContainer, { marginTop: 56 }]}>
+              <MaterialIcons name={'lock'} size={30} />
+              <TextInput
+                secureTextEntry={!showPassword}
+                value={authData.password}
+                onChangeText={text =>
+                  setAuthData({ ...authData, password: text })
+                }
+                placeholder="Password"
+                placeholderTextColor={colors.authInputPlaceholder}
+                style={styles.input}
+              />
+              <Pressable onPress={() => setShowPassword(!showPassword)}>
+                <MaterialIcons
+                  name={showPassword ? 'visibility' : 'visibility-off'}
+                  size={30}
+                />
+              </Pressable>
+            </View>
+
+            {/* <Text style={styles.forgotPassword}>forget password?</Text> */}
+
+            <TouchableOpacity
+              style={styles.btn}
+              onPress={handleLogin}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.btnText}>Sign In</Text>
+            </TouchableOpacity>
+
+            <View style={styles.textInLineContainer}>
+              <Text style={styles.text}>Don’t have an account?</Text>
+              <Text
+                style={styles.linkText}
+                onPress={() => navigate.navigate('Signup')}
+              >
+                sign up
+              </Text>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 };
 
 export default Login;
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
-    paddingHorizontal: 20,
     justifyContent: 'center',
+    paddingHorizontal: 20,
   },
   logo: {
     width: 83,
@@ -128,6 +144,7 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 25,
     marginBottom: -4,
+    alignSelf: 'center',
   },
   title: {
     fontSize: 25,
@@ -145,6 +162,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: colors.white,
     fontFamily: FONTS.REGULAR,
+    alignSelf: 'center',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -162,7 +180,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingTop: 0,
     paddingBottom: 0,
-    color: "#000",
+    color: '#000',
   },
   forgotPassword: {
     marginTop: 24,
@@ -179,7 +197,7 @@ const styles = StyleSheet.create({
     height: 42,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 16,
+    marginTop: 47,
   },
   btnText: {
     color: colors.white,

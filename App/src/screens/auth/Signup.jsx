@@ -1,7 +1,9 @@
 import {
   Alert,
   Image,
+  KeyboardAvoidingView,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -15,6 +17,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { FONTS } from '../../utils/fonts';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
+import CustomModal from '../../components/modal/CustomModal';
 
 const Signup = () => {
   const [authData, setAuthData] = useState({
@@ -24,98 +27,138 @@ const Signup = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
 
+  const [modalVisible, setModalVisible] = useState(false);
+
   const navigate = useNavigation();
 
   const handleSignup = () => {
-      const formData = new FormData();
-      formData.append('fullName', authData.fullName);
-      formData.append('email', authData.email);
-      formData.append('password', authData.password);
-  
-      Alert.alert('Sign up');
-    }
+    const formData = new FormData();
+    formData.append('fullName', authData.fullName);
+    formData.append('email', authData.email);
+    formData.append('password', authData.password);
+
+    setModalVisible(true);
+  };
   return (
-    <LinearGradient
-      colors={[colors.bgColor1, colors.bgColor2]}
-      style={styles.container}
-    >
-      <Image
-        source={ICON.LOGO}
-        style={styles.logo}
-        resizeMode="contain"
-        fadeDuration={0}
+    <>
+      <CustomModal
+        visible={modalVisible}
+        title="Your account has been created"
+        message="You gonna recieve a verification code in your email"
+        navigate="VerifyAccount"
+        onClose={() => setModalVisible(false)}
       />
-      <View style={styles.textContainer}>
-        <Text style={styles.title}>Welcome Back to</Text>
-        <Text style={styles.titleLogo}>Do It</Text>
-      </View>
-      <Text style={styles.smallText}>create an account and Join us now!</Text>
-
-      {/* Name Input */}
-      <View style={styles.inputContainer}>
-        <MaterialIcons name={'person'} size={30} />
-        <TextInput
-          value={authData.fullName}
-          onChangeText={text => setAuthData({ ...authData, fullName: text })}
-          placeholder="Full Name"
-          placeholderTextColor={colors.authInputPlaceholder}
-          style={styles.input}
-        />
-      </View>
-
-      {/* Email Input */}
-      <View style={styles.inputContainer}>
-        <MaterialIcons name={'mail'} size={30} />
-        <TextInput
-          keyboardType="email-address"
-          value={authData.email}
-          onChangeText={text => setAuthData({ ...authData, email: text })}
-          placeholder="Email"
-          placeholderTextColor={colors.authInputPlaceholder}
-          style={styles.input}
-        />
-      </View>
-
-      {/* Password Input */}
-      <View style={styles.inputContainer}>
-        <MaterialIcons name={'lock'} size={30} />
-        <TextInput
-          secureTextEntry={!showPassword}
-          value={authData.password}
-          onChangeText={text => setAuthData({ ...authData, password: text })}
-          placeholder="Password"
-          placeholderTextColor={colors.authInputPlaceholder}
-          style={styles.input}
-        />
-        <Pressable onPress={() => setShowPassword(!showPassword)}>
-          <MaterialIcons
-            name={showPassword ? 'visibility' : 'visibility-off'}
-            size={30}
-          />
-        </Pressable>
-      </View>
-
-      <TouchableOpacity
-        style={styles.btn}
-        onPress={handleSignup}
-        activeOpacity={0.85}
+      <LinearGradient
+        colors={[colors.bgColor1, colors.bgColor2]}
+        style={styles.mainContainer}
       >
-        <Text style={styles.btnText}>Sign Up</Text>
-      </TouchableOpacity>
+        <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContainer}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            scrollEnabled={false}
+            style={{ flex: 1 }}
+          >
+            <View style={styles.container}>
+            <Image
+              source={ICON.LOGO}
+              style={styles.logo}
+              resizeMode="contain"
+              fadeDuration={0}
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.title}>Welcome Back to</Text>
+              <Text style={styles.titleLogo}>Do It</Text>
+            </View>
+            <Text style={styles.smallText}>
+              create an account and Join us now!
+            </Text>
 
-      <View style={styles.textInLineContainer}>
-        <Text style={styles.text}>Already have an account?</Text>
-        <Text style={styles.linkText} onPress={() => navigate.goBack()}>
-          sign in
-        </Text>
-      </View>
+            {/* Name Input */}
+            <View style={styles.inputContainer}>
+              <MaterialIcons name={'person'} size={30} />
+              <TextInput
+                value={authData.fullName}
+                onChangeText={text =>
+                  setAuthData({ ...authData, fullName: text })
+                }
+                placeholder="Full Name"
+                placeholderTextColor={colors.authInputPlaceholder}
+                style={styles.input}
+              />
+            </View>
+
+            {/* Email Input */}
+            <View style={styles.inputContainer}>
+              <MaterialIcons name={'mail'} size={30} />
+              <TextInput
+                keyboardType="email-address"
+                value={authData.email}
+                onChangeText={text => setAuthData({ ...authData, email: text })}
+                placeholder="Email"
+                placeholderTextColor={colors.authInputPlaceholder}
+                style={styles.input}
+              />
+            </View>
+
+            {/* Password Input */}
+            <View style={styles.inputContainer}>
+              <MaterialIcons name={'lock'} size={30} />
+              <TextInput
+                secureTextEntry={!showPassword}
+                value={authData.password}
+                onChangeText={text =>
+                  setAuthData({ ...authData, password: text })
+                }
+                placeholder="Password"
+                placeholderTextColor={colors.authInputPlaceholder}
+                style={styles.input}
+              />
+              <Pressable onPress={() => setShowPassword(!showPassword)}>
+                <MaterialIcons
+                  name={showPassword ? 'visibility' : 'visibility-off'}
+                  size={30}
+                />
+              </Pressable>
+            </View>
+
+            <TouchableOpacity
+              style={styles.btn}
+              onPress={() => handleSignup()}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.btnText}>Sign Up</Text>
+            </TouchableOpacity>
+
+            <View style={styles.textInLineContainer}>
+              <Text style={styles.text}>Already have an account?</Text>
+              <Text style={styles.linkText} onPress={() => navigate.goBack()}>
+                sign in
+              </Text>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </LinearGradient>
+    </>
   );
 };
 
 export default Signup;
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
   container: {
     flex: 1,
     paddingHorizontal: 20,
@@ -131,6 +174,7 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 25,
     marginBottom: -4,
+    alignSelf: 'center',
   },
   title: {
     fontSize: 25,
@@ -148,6 +192,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: colors.white,
     fontFamily: FONTS.REGULAR,
+    alignSelf: 'center',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -164,7 +209,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingTop: 0,
     paddingBottom: 0,
-    color: "#000",
+    color: '#000',
   },
   btn: {
     backgroundColor: colors.primary,

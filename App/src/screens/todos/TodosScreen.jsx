@@ -8,32 +8,61 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import colors from '../../utils/colors';
 import LinearGradient from 'react-native-linear-gradient';
 import { todos } from '../../utils/dummyData';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FONTS } from '../../utils/fonts';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import TodoSearchHeader from '../../components/todos/TodoSearchHeader';
+import {getDateTime} from '../../utils/getDateTime'
+import CreateTodoButton from '../../components/createTodo/CreateTodoButton'
 
 const TodosScreen = () => {
+  const [filteredTodo, setFilteredTodo] = useState(todos);
+  const [search, setSearch] = useState('');
+  const [filterationOptions, setFilterationOptions] = useState('All');
 
-  const Header = () => {
-    return (
-      <View style={styles.headerContainer}>
-        <View style={styles.inputContainer}>
-          <TextInput 
-          placeholder='Search by task title'
-          style={styles.input}
-          />
-          <MaterialIcons
-          name={'search'}
-          size={17}
-          color={'rgba(255, 255, 255, 0.5)'}
-        />
-        </View>
-      </View>
-    );
+  const applyFilters = (searchText, filterOption) => {
+    let data = [...todos];
+
+    // search filter
+    if (searchText) {
+      data = data.filter(item =>
+        item.title.toLowerCase().includes(searchText.toLowerCase()),
+      );
+    }
+
+    // status filter
+    if (filterOption === 'Completed') {
+      data = data.filter(item => item.completed === true);
+    }
+
+    if (filterOption === 'Incomplete') {
+      data = data.filter(item => item.completed === false);
+    }
+
+    // sorting
+if (filterOption === 'Ascending') {
+  data.sort((a, b) => getDateTime(a) - getDateTime(b));
+}
+
+if (filterOption === 'Descending') {
+  data.sort((a, b) => getDateTime(b) - getDateTime(a));
+}
+
+    setFilteredTodo(data);
+  };
+
+  const handleSearch = text => {
+    setSearch(text);
+    applyFilters(text, filterationOptions);
+  };
+
+  const handleFilter = option => {
+    setFilterationOptions(option);
+    applyFilters(search, option);
   };
 
   const renderItems = ({ item }) => {
@@ -70,9 +99,7 @@ const TodosScreen = () => {
   // Index where completed tasks begin
   const renderSectionHeader = ({ index }) => {
     if (index === 0) {
-      return (
-        <Text style={[styles.heading, { marginTop: 0 }]}>Tasks List</Text>
-      );
+      return <Text style={[styles.heading, { marginTop: 0 }]}>Tasks List</Text>;
     }
     return null;
   };
@@ -82,12 +109,22 @@ const TodosScreen = () => {
       colors={[colors.bgColor1, colors.bgColor2]}
       style={styles.container}
     >
+      <CreateTodoButton />
       <SafeAreaView style={{ flex: 1, marginBottom: 60 }}>
-        <Header />
+        <TodoSearchHeader
+          search={search}
+          handleSearch={handleSearch}
+          filterationOptions={filterationOptions}
+          handleFilter={handleFilter}
+        />
+
         <FlatList
-          data={todos}
+          data={filteredTodo}
           keyExtractor={item => item.title}
-          // ListHeaderComponent={Header}
+          // ListHeaderComponent={<TodoSearchHeader search={search} handleSearch={handleSearch}/>}
+          ListEmptyComponent={
+            <Text style={styles.noTaskText}>No Task Found</Text>
+          }
           showsVerticalScrollIndicator={false}
           renderItem={({ item, index }) => (
             <>
@@ -108,37 +145,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
-  },
-  headerContainer: {
-    marginVertical: 25,
-    flexDirection: 'row',
-    gap: 8,
-    alignItems: 'center',
-  },
-  profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 100,
-  },
-  inputContainer:{
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: "rgba(16, 45, 83, 0.8)",
-    borderRadius: 10,
-    paddingHorizontal: 10
-  },
-  input: {
-    flexGrow:1,
-    height: 42,
-    borderRadius:10,
-    backgroundColor: "rgba(16, 45, 83, 0.8)",
-    padding: 10,
-  },
-  email: {
-    fontSize: 14,
-    fontFamily: FONTS.MEDIUM,
-    color: 'rgba(255, 255, 255, 0.5)',
-    letterSpacing: 1,
   },
   heading: {
     fontSize: 14,
@@ -172,5 +178,12 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.REGULAR,
     letterSpacing: 1,
     color: 'rgba(0, 0, 0, 0.9)',
+  },
+  noTaskText: {
+    fontSize: 14,
+    fontFamily: FONTS.MEDIUM,
+    color: colors.white,
+    letterSpacing: 1,
+    textAlign: 'center',
   },
 });

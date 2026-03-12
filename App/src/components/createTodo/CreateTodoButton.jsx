@@ -1,13 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text } from 'react-native'
 import React from 'react'
 import colors from '../../utils/colors'
 import { FONTS } from '../../utils/fonts'
+import { useBottomSheet } from '../../context/BottomSheetContext'
 
-const CreateTodoButton = () => {
+const CreateTodoButton = ({btnRef}) => {
+    const { isBottomSheetOpen } = useBottomSheet();
   return (
-    <View style={styles.btn}>
+    <Pressable style={[styles.btn, {opacity: isBottomSheetOpen ? 0 : 1}]} onPress={() => btnRef.current?.expand()}>
       <Text style={styles.btnText}>+</Text>
-    </View>
+    </Pressable>
   )
 }
 

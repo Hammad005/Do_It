@@ -4,10 +4,12 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import BottomTabRoutes from "./BottomTabRoutes"
 import colors from '../utils/colors';
 import { FONTS } from '../utils/fonts';
+import { useBottomSheet } from '../context/BottomSheetContext';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigation = () => {
+  const { isBottomSheetOpen } = useBottomSheet();
 
   const renderIcon = (icon, activeIcon,  focused) => (
     <>
@@ -32,6 +34,7 @@ const BottomTabNavigation = () => {
           elevation: 0,
           borderTopWidth: 0,
           display: route.name === "Settings" ? "none" : "flex",
+          bottom: isBottomSheetOpen ? -100 : 0
         },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.white,

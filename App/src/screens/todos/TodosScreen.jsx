@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import colors from '../../utils/colors';
 import LinearGradient from 'react-native-linear-gradient';
 import { todos } from '../../utils/dummyData';
@@ -18,11 +18,13 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import TodoSearchHeader from '../../components/todos/TodoSearchHeader';
 import {getDateTime} from '../../utils/getDateTime'
 import CreateTodoButton from '../../components/createTodo/CreateTodoButton'
+import CreateTodoBottomSheet from '../../components/createTodo/CreateTodoBottomSheet'
 
 const TodosScreen = () => {
   const [filteredTodo, setFilteredTodo] = useState(todos);
   const [search, setSearch] = useState('');
   const [filterationOptions, setFilterationOptions] = useState('All');
+  const btnRef = useRef(null);
 
   const applyFilters = (searchText, filterOption) => {
     let data = [...todos];
@@ -109,7 +111,8 @@ if (filterOption === 'Descending') {
       colors={[colors.bgColor1, colors.bgColor2]}
       style={styles.container}
     >
-      <CreateTodoButton />
+      <CreateTodoButton btnRef={btnRef}/>
+      
       <SafeAreaView style={{ flex: 1, marginBottom: 60 }}>
         <TodoSearchHeader
           search={search}
@@ -133,6 +136,7 @@ if (filterOption === 'Descending') {
             </>
           )}
         />
+      <CreateTodoBottomSheet btnRef={btnRef}/>
       </SafeAreaView>
     </LinearGradient>
   );

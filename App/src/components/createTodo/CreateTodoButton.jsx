@@ -1,15 +1,34 @@
 import { Pressable, StyleSheet, Text } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import colors from '../../utils/colors'
 import { FONTS } from '../../utils/fonts'
 import { useBottomSheet } from '../../context/BottomSheetContext'
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withTiming 
+} from 'react-native-reanimated'
 
-const CreateTodoButton = ({btnRef}) => {
-    const { isBottomSheetOpen } = useBottomSheet();
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
+
+const CreateTodoButton = ({ btnRef }) => {
+  const { isBottomSheetOpen } = useBottomSheet()
+  const opacity = useSharedValue(1)
+
+  useEffect(() => {
+    opacity.value = withTiming(isBottomSheetOpen ? 0 : 1, { duration: 250 })
+  }, [isBottomSheetOpen])
+
+  const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }))
+
   return (
-    <Pressable style={[styles.btn, {opacity: isBottomSheetOpen ? 0 : 1}]} onPress={() => btnRef.current?.expand()}>
+    <AnimatedPressable
+      onPress={() => btnRef.current?.expand()}
+      pointerEvents={isBottomSheetOpen ? "none" : "auto"}
+      style={[styles.btn, animatedStyle]}
+    >
       <Text style={styles.btnText}>+</Text>
-    </Pressable>
+    </AnimatedPressable>
   )
 }
 

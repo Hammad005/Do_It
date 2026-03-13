@@ -136,8 +136,8 @@ if (filterOption === 'Descending') {
             </>
           )}
         />
-      <CreateTodoBottomSheet btnRef={btnRef}/>
       </SafeAreaView>
+      <CreateTodoBottomSheet btnRef={btnRef}/>
     </LinearGradient>
   );
 };

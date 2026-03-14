@@ -16,15 +16,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { FONTS } from '../../utils/fonts';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import TodoSearchHeader from '../../components/todos/TodoSearchHeader';
-import {getDateTime} from '../../utils/getDateTime'
-import CreateTodoButton from '../../components/createTodo/CreateTodoButton'
-import CreateTodoBottomSheet from '../../components/createTodo/CreateTodoBottomSheet'
+import { getDateTime } from '../../utils/getDateTime';
+import CreateTodoButton from '../../components/createTodo/CreateTodoButton';
+import CreateTodoBottomSheet from '../../components/createTodo/CreateTodoBottomSheet';
+import ViewTodo from '../../components/viewTodo/ViewTodo';
 
 const TodosScreen = () => {
   const [filteredTodo, setFilteredTodo] = useState(todos);
   const [search, setSearch] = useState('');
   const [filterationOptions, setFilterationOptions] = useState('All');
   const btnRef = useRef(null);
+
+  const [selectedTodo, setSelectedTodo] = useState(null);
 
   const applyFilters = (searchText, filterOption) => {
     let data = [...todos];
@@ -46,13 +49,13 @@ const TodosScreen = () => {
     }
 
     // sorting
-if (filterOption === 'Ascending') {
-  data.sort((a, b) => getDateTime(a) - getDateTime(b));
-}
+    if (filterOption === 'Ascending') {
+      data.sort((a, b) => getDateTime(a) - getDateTime(b));
+    }
 
-if (filterOption === 'Descending') {
-  data.sort((a, b) => getDateTime(b) - getDateTime(a));
-}
+    if (filterOption === 'Descending') {
+      data.sort((a, b) => getDateTime(b) - getDateTime(a));
+    }
 
     setFilteredTodo(data);
   };
@@ -69,7 +72,13 @@ if (filterOption === 'Descending') {
 
   const renderItems = ({ item }) => {
     return (
-      <TouchableOpacity style={styles.box} activeOpacity={0.85}>
+      <TouchableOpacity
+        style={styles.box}
+        activeOpacity={0.85}
+        onPress={() => {
+          setSelectedTodo(item);
+        }}
+      >
         <View style={styles.boxContent}>
           {item.completed && (
             <Image
@@ -106,13 +115,19 @@ if (filterOption === 'Descending') {
     return null;
   };
 
+  if (selectedTodo) {
+    return (
+      <ViewTodo todo={selectedTodo} setSelectedTodo={setSelectedTodo} />
+    );
+  }
+
   return (
     <LinearGradient
       colors={[colors.bgColor1, colors.bgColor2]}
       style={styles.container}
     >
-      <CreateTodoButton btnRef={btnRef}/>
-      
+      <CreateTodoButton btnRef={btnRef} />
+
       <SafeAreaView style={{ flex: 1, marginBottom: 60 }}>
         <TodoSearchHeader
           search={search}
@@ -137,7 +152,7 @@ if (filterOption === 'Descending') {
           )}
         />
       </SafeAreaView>
-      <CreateTodoBottomSheet btnRef={btnRef}/>
+      <CreateTodoBottomSheet btnRef={btnRef} />
     </LinearGradient>
   );
 };

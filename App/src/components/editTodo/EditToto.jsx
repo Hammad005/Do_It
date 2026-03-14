@@ -19,15 +19,16 @@ import DatePicker from 'react-native-date-picker';
 import { BlurView } from '@react-native-community/blur';
 import { FONTS } from '../../utils/fonts';
 
-const CreateTodoBottomSheet = ({ btnRef }) => {
+
+const EditToto = ({ btnRef, todo }) => {
   const snapPoints = useMemo(() => ['25%', '50%'], []);
   const { setIsBottomSheetOpen } = useBottomSheet();
 
   const [data, setData] = useState({
-    todoTilte: '',
-    todoDescription: '',
-    todoDate: null,
-    todoTime: null,
+    todoTilte: todo.title || '',
+    todoDescription: todo.description || '',
+    todoDate: todo.date || null,
+    todoTime: todo.time || null,
   });
 
   const [openDate, setOpenDate] = useState(false);
@@ -118,7 +119,8 @@ const CreateTodoBottomSheet = ({ btnRef }) => {
                 />
                 <Text style={[styles.dateText, { color: data.todoDate ? '#FFFFFF' : 'rgba(255,255,255,0.8)' }]}>
                   {data.todoDate
-                    ? data.todoDate.toLocaleDateString()
+                    // ? data.todoDate.toLocaleDateString()
+                    ? data.todoDate
                     : 'Select Date'}
                 </Text>
               </Pressable>
@@ -130,7 +132,8 @@ const CreateTodoBottomSheet = ({ btnRef }) => {
                 <MaterialIcons name="timer" size={18} color="#FFFFFF" />
                 <Text style={[styles.dateText, { color: data.todoTime ? '#FFFFFF' : 'rgba(255,255,255,0.8)' }]}>
                   {data.todoTime
-                    ? data.todoTime.toLocaleTimeString()
+                    // ? data.todoTime.toLocaleTimeString()
+                    ? data.todoTime
                     : 'Select Time'}
                 </Text>
               </Pressable>
@@ -139,7 +142,7 @@ const CreateTodoBottomSheet = ({ btnRef }) => {
                 modal
                 mode="date"
                 open={openDate}
-                date={data.todoDate || new Date()}
+                date={new Date()}
                 onConfirm={date => {
                   setData({ ...data, todoDate: date });
                   setOpenDate(false);
@@ -151,7 +154,7 @@ const CreateTodoBottomSheet = ({ btnRef }) => {
                 modal
                 mode="time"
                 open={openTime}
-                date={data.todoTime || new Date()}
+                date={new Date()}
                 onConfirm={date => {
                   setData({ ...data, todoTime: date });
                   setOpenTime(false);
@@ -175,7 +178,7 @@ const CreateTodoBottomSheet = ({ btnRef }) => {
   );
 };
 
-export default CreateTodoBottomSheet;
+export default EditToto;
 
 const styles = StyleSheet.create({
   handleIndicator: {

@@ -7,13 +7,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import colors from '../../utils/colors';
 import LinearGradient from 'react-native-linear-gradient';
 import { todos } from '../../utils/dummyData';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FONTS } from '../../utils/fonts';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import ViewTodo from '../../components/viewTodo/ViewTodo';
 
 const HomeScreen = () => {
   // Sort: incomplete first, completed last
@@ -21,7 +22,8 @@ const HomeScreen = () => {
     ...todos.filter(item => item.completed === false),
     ...todos.filter(item => item.completed === true),
   ];
-
+    const [selectedTodo, setSelectedTodo] = useState(null);
+  
   const Header = () => {
     return (
       <View style={styles.headerContainer}>
@@ -39,9 +41,14 @@ const HomeScreen = () => {
     );
   };
 
+  if (selectedTodo) {
+    return (
+      <ViewTodo todo={selectedTodo} setSelectedTodo={setSelectedTodo} />
+    );
+  }
   const renderItems = ({ item }) => {
     return (
-      <TouchableOpacity style={styles.box} activeOpacity={0.85}>
+      <TouchableOpacity style={styles.box} activeOpacity={0.85} onPress={() => setSelectedTodo(item)}>
         <View style={styles.boxContent}>
           {item.completed && (
             <Image

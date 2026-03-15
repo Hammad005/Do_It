@@ -1,5 +1,6 @@
 import HomeScreen from '../screens/Home/HomeScreen';
 import TodosScreen from '../screens/todos/TodosScreen'
+import CalendarMainScreen from '../screens/Calendar/CalendarMainScreen'
 import Settings from "../screens/Settings/Settings"
 import { BottomTabIcons } from '../utils/bottomTabIcons';
 
@@ -19,7 +20,7 @@ const BottomTabRoutes = [
     },
     {
         name: 'Calendar',
-        component: HomeScreen,
+        component: CalendarMainScreen,
         icon: BottomTabIcons.CALENDAR,
         activeIcon: BottomTabIcons.ACTIVE_CALENDAR
     },

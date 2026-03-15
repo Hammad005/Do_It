@@ -40,12 +40,6 @@ const HomeScreen = () => {
       </View>
     );
   };
-
-  if (selectedTodo) {
-    return (
-      <ViewTodo todo={selectedTodo} setSelectedTodo={setSelectedTodo} />
-    );
-  }
   const renderItems = ({ item }) => {
     return (
       <TouchableOpacity style={styles.box} activeOpacity={0.85} onPress={() => setSelectedTodo(item)}>
@@ -91,6 +85,11 @@ const HomeScreen = () => {
     return null;
   };
 
+  if (selectedTodo) {
+    return (
+      <ViewTodo todo={selectedTodo} setSelectedTodo={setSelectedTodo} />
+    );
+  }
   return (
     <LinearGradient
       colors={[colors.bgColor1, colors.bgColor2]}

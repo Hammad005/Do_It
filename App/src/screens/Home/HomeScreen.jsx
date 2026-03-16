@@ -14,15 +14,19 @@ import { todos } from '../../utils/dummyData';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FONTS } from '../../utils/fonts';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import ViewTodo from '../../components/viewTodo/ViewTodo';
+import { useNavigation } from '@react-navigation/native';
+import { Screen } from 'react-native-screens';
 
 const HomeScreen = () => {
+
+  const navigation = useNavigation();
+
   // Sort: incomplete first, completed last
   const sortedTodos = [
     ...todos.filter(item => item.completed === false),
     ...todos.filter(item => item.completed === true),
   ];
-    const [selectedTodo, setSelectedTodo] = useState(null);
+
   
   const Header = () => {
     return (
@@ -42,7 +46,7 @@ const HomeScreen = () => {
   };
   const renderItems = ({ item }) => {
     return (
-      <TouchableOpacity style={styles.box} activeOpacity={0.85} onPress={() => setSelectedTodo(item)}>
+      <TouchableOpacity style={styles.box} activeOpacity={0.85} onPress={() => navigation.navigate('Todos', {screen: 'ViewTodo', params: { todo: item }})}>
         <View style={styles.boxContent}>
           {item.completed && (
             <Image
@@ -85,11 +89,6 @@ const HomeScreen = () => {
     return null;
   };
 
-  if (selectedTodo) {
-    return (
-      <ViewTodo todo={selectedTodo} setSelectedTodo={setSelectedTodo} />
-    );
-  }
   return (
     <LinearGradient
       colors={[colors.bgColor1, colors.bgColor2]}

@@ -1,5 +1,5 @@
 import HomeScreen from '../screens/Home/HomeScreen';
-import TodosScreen from '../screens/todos/TodosScreen'
+import TodoStackNavigation from './TodoStackNavigation';
 import CalendarMainScreen from '../screens/Calendar/CalendarMainScreen'
 import Settings from "../screens/Settings/Settings"
 import { BottomTabIcons } from '../utils/bottomTabIcons';
@@ -13,7 +13,7 @@ const BottomTabRoutes = [
     },
     {
         name: 'Todos',
-        component: TodosScreen,
+        component: TodoStackNavigation,
         icon: BottomTabIcons.TODOS,
         activeIcon: BottomTabIcons.ACTIVE_TODOS
         

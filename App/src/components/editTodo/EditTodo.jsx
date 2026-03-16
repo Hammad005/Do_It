@@ -20,7 +20,7 @@ import { BlurView } from '@react-native-community/blur';
 import { FONTS } from '../../utils/fonts';
 
 
-const EditToto = ({ btnRef, todo }) => {
+const EditTodo = ({ btnRef, todo }) => {
   const snapPoints = useMemo(() => ['25%', '50%'], []);
   const { setIsBottomSheetOpen } = useBottomSheet();
 
@@ -178,7 +178,7 @@ const EditToto = ({ btnRef, todo }) => {
   );
 };
 
-export default EditToto;
+export default EditTodo;
 
 const styles = StyleSheet.create({
   handleIndicator: {

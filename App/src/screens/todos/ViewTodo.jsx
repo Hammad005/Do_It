@@ -1,62 +1,26 @@
-import { Pressable, StyleSheet, Text, View, Dimensions } from 'react-native';
-import React, { useEffect, useRef } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useRef } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../../utils/colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { FONTS } from '../../utils/fonts';
-import EditTodo from '../../components/editTodo/EditToto';
+import EditTodo from '../../components/editTodo/EditTodo';
+import { useNavigation } from '@react-navigation/native';
 
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-  runOnJS,
-} from 'react-native-reanimated';
-
-const { width } = Dimensions.get('window');
-
-const ViewTodo = ({ todo, setSelectedTodo }) => {
+const ViewTodo = ({ route }) => {
+  const navigation = useNavigation();
   const btnRef = useRef(null);
-
-  const translateX = useSharedValue(width);
-
-  useEffect(() => {
-    translateX.value = withTiming(0, {
-      duration: 350,
-      easing: Easing.out(Easing.cubic),
-    });
-  }, []);
-
-  const handleBack = () => {
-    translateX.value = withTiming(
-      width,
-      {
-        duration: 300,
-        easing: Easing.in(Easing.cubic),
-      },
-      () => {
-        runOnJS(setSelectedTodo)(null);
-      },
-    );
-  };
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: translateX.value }],
-    };
-  });
+  const { todo } = route.params;
 
   return (
     <LinearGradient
       colors={[colors.bgColor1, colors.bgColor2]}
       style={styles.container}
     >
-      <Animated.View style={[{ flex: 1 }, animatedStyle]}>
         <SafeAreaView style={{ flex: 1 }}>
           {/* HEADER */}
-          <Pressable style={styles.header} onPress={handleBack}>
+          <Pressable style={styles.header} onPress={() => navigation.navigate('Todos', {screen: 'TodoMainScreen'})}>
             <MaterialIcons
               name={'navigate-before'}
               size={28}
@@ -115,7 +79,6 @@ const ViewTodo = ({ todo, setSelectedTodo }) => {
             </Pressable>
           </View>
         </SafeAreaView>
-      </Animated.View>
       <EditTodo todo={todo} btnRef={btnRef} />
     </LinearGradient>
   );

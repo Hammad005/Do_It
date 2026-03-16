@@ -19,15 +19,15 @@ import TodoSearchHeader from '../../components/todos/TodoSearchHeader';
 import { getDateTime } from '../../utils/getDateTime';
 import CreateTodoButton from '../../components/createTodo/CreateTodoButton';
 import CreateTodoBottomSheet from '../../components/createTodo/CreateTodoBottomSheet';
-import ViewTodo from '../../components/viewTodo/ViewTodo';
+import { useNavigation } from '@react-navigation/native';
 
 const TodosScreen = () => {
   const [filteredTodo, setFilteredTodo] = useState(todos);
   const [search, setSearch] = useState('');
   const [filterationOptions, setFilterationOptions] = useState('All');
   const btnRef = useRef(null);
+  const navigation = useNavigation();
 
-  const [selectedTodo, setSelectedTodo] = useState(null);
 
   const applyFilters = (searchText, filterOption) => {
     let data = [...todos];
@@ -76,7 +76,10 @@ const TodosScreen = () => {
         style={styles.box}
         activeOpacity={0.85}
         onPress={() => {
-          setSelectedTodo(item);
+          navigation.navigate('Todos', {
+            screen: 'ViewTodo',
+            params: { todo: item },
+          });
         }}
       >
         <View style={styles.boxContent}>
@@ -114,12 +117,6 @@ const TodosScreen = () => {
     }
     return null;
   };
-
-  if (selectedTodo) {
-    return (
-      <ViewTodo todo={selectedTodo} setSelectedTodo={setSelectedTodo} />
-    );
-  }
 
   return (
     <LinearGradient

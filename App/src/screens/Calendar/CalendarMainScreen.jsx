@@ -12,14 +12,15 @@ import colors from '../../utils/colors';
 import { Calendar } from 'react-native-calendars';
 import { todos } from '../../utils/dummyData';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import ViewTodo from '../../components/viewTodo/ViewTodo';
+import ViewTodo from '../todos/ViewTodo';
 import { FONTS } from '../../utils/fonts';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 const CalendarMainScreen = () => {
+    const navigation = useNavigation();
     const [selected, setSelected] = useState('');
     const [sortedTodos, setSortedTodos] = useState(null);
-    const [selectedTodo, setSelectedTodo] = useState(null);
     const [currentMonth, setCurrentMonth] = useState(new Date().toISOString().split('T')[0]);
 
     const markedDates = useMemo(() => {
@@ -68,7 +69,12 @@ const CalendarMainScreen = () => {
             <TouchableOpacity
                 style={styles.box}
                 activeOpacity={0.85}
-                onPress={() => setSelectedTodo(item)}
+                onPress={() => {
+                    navigation.navigate('Todos', {
+                        screen: 'ViewTodo',
+                        params: { todo: item },
+                    });
+                }}
             >
                 <View style={styles.boxContent}>
                     {item.completed && (
@@ -145,11 +151,6 @@ const CalendarMainScreen = () => {
             </LinearGradient>
         );
     };
-
-    if (selectedTodo) {
-        return <ViewTodo todo={selectedTodo} setSelectedTodo={setSelectedTodo} />;
-    }
-
     return (
         <LinearGradient
             colors={[colors.bgColor1, colors.bgColor2]}

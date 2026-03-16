@@ -39,7 +39,7 @@ const BottomTabNavigation = () => {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.white,
         tabBarHideOnKeyboard: true,
-        headerShown: route.name === "Settings" ? true : false,
+        headerShown: route.name === "Settings" || route.name === "Calendar" ? true : false,
         headerTransparent: true,
         headerTintColor: colors.white,
         headerTitleStyle: { fontSize: 25, fontFamily: FONTS.MEDIUM },

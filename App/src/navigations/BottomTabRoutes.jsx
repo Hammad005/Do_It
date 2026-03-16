@@ -1,7 +1,6 @@
 import HomeScreen from '../screens/Home/HomeScreen';
 import TodoStackNavigation from './TodoStackNavigation';
 import CalendarMainScreen from '../screens/Calendar/CalendarMainScreen'
-import Settings from "../screens/Settings/Settings"
 import { BottomTabIcons } from '../utils/bottomTabIcons';
 
 const BottomTabRoutes = [
@@ -24,12 +23,6 @@ const BottomTabRoutes = [
         icon: BottomTabIcons.CALENDAR,
         activeIcon: BottomTabIcons.ACTIVE_CALENDAR
     },
-    {
-        name: 'Settings',
-        component: Settings,
-        icon: BottomTabIcons.SETTINGS,
-        activeIcon: BottomTabIcons.SETTINGS
-    }
 ]
 
 export default BottomTabRoutes

@@ -7,7 +7,7 @@ import ViewTodo from '../screens/todos/ViewTodo';
 const TodoStackNavigation = () => {
     const Stack = createStackNavigator()
   return (
-    <Stack.Navigator initialRouteName="TodoMainScreen" screenOptions={{ headerShown: false }} >
+    <Stack.Navigator backBehavior="history" initialRouteName="TodoMainScreen" screenOptions={{ headerShown: false }} >
       <Stack.Screen name="TodoMainScreen" component={TodosScreen} />
       <Stack.Screen name="ViewTodo" component={ViewTodo} />
     </Stack.Navigator>

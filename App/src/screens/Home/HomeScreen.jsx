@@ -16,9 +16,9 @@ import { FONTS } from '../../utils/fonts';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { Screen } from 'react-native-screens';
+import { ICON } from '../../utils/icons';
 
 const HomeScreen = () => {
-
   const navigation = useNavigation();
 
   // Sort: incomplete first, completed last
@@ -27,26 +27,40 @@ const HomeScreen = () => {
     ...todos.filter(item => item.completed === true),
   ];
 
-  
   const Header = () => {
     return (
       <View style={styles.headerContainer}>
-        <Image
-          source={require('../../assets/user/defaultProfile.png')}
-          style={styles.profileImage}
-          resizeMode="contain"
-          fadeDuration={0}
-        />
-        <View>
-          <Text style={styles.userName}>Hammad Khatri</Text>
-          <Text style={styles.email}>test@mail.com</Text>
+        <View style={styles.profileContainer}>
+          <Image
+            source={ICON.LOGO}
+            style={styles.profileImage}
+            resizeMode="contain"
+            fadeDuration={0}
+          />
+          <View>
+            <Text style={styles.userName}>Hammad Khatri</Text>
+            <Text style={styles.email}>test@mail.com</Text>
+          </View>
         </View>
+        <TouchableOpacity style={styles.logoutContainer}>
+          <MaterialIcons name={'logout'} size={30} color={colors.white} />
+        </TouchableOpacity>
       </View>
     );
   };
   const renderItems = ({ item }) => {
     return (
-      <TouchableOpacity style={styles.box} activeOpacity={0.85} onPress={() => navigation.navigate('Todos', {screen: 'ViewTodo', params: { todo: item }})}>
+      <TouchableOpacity
+        style={styles.box}
+        activeOpacity={0.85}
+        onPress={() =>
+          navigation.navigate('Todos', {
+            screen: 'ViewTodo',
+            params: { todo: item },
+            // merge: true,
+          })
+        }
+      >
         <View style={styles.boxContent}>
           {item.completed && (
             <Image
@@ -124,8 +138,13 @@ const styles = StyleSheet.create({
   headerContainer: {
     marginVertical: 25,
     flexDirection: 'row',
-    gap: 8,
     alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  profileContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   profileImage: {
     width: 50,
@@ -143,6 +162,14 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.MEDIUM,
     color: 'rgba(255, 255, 255, 0.5)',
     letterSpacing: 1,
+  },
+  logoutContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 10,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   heading: {
     fontSize: 14,

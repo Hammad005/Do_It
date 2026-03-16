@@ -168,7 +168,7 @@ const EditTodo = ({ btnRef, todo }) => {
                 <Text style={[styles.buttonText, { color: colors.bgColor2 }]}>Cancel</Text>
               </Pressable>
               <Pressable style={styles.button} onPress={() => {}}>
-                <Text style={styles.buttonText}>Create</Text>
+                <Text style={styles.buttonText}>Update</Text>
               </Pressable>
             </View>
           </View>

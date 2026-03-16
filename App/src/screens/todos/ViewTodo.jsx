@@ -98,7 +98,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   headerText: {
-    fontSize: 16,
+    fontSize: 24,
+    fontWeight: 700,
     fontFamily: FONTS.MEDIUM,
     color: colors.white,
   },

@@ -14,14 +14,15 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    isVerfied: {
+    isVerified: {
         type: Boolean,
         default: false
     },
     verificationOTP: String,
     verificationOTPExpiry: Date,  
     forgotPasswordOTP: String,
-    forgotPasswordOTPExpiry: Date
+    forgotPasswordOTPExpiry: Date,
+    forgotPasswordOTPVerified: Boolean
 }, {timestamps: true});
 
 const User = mongoose.model('User', UserSchema);

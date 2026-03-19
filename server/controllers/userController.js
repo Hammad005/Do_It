@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const sendEmail = require("../lib/Nodemailer");
 const {
     accountVerificationOtpEmailTemplate,
+    forgotPasswordOtpEmailTemplate,
 } = require("../utils/emailTemplates");
 const otpGenerator = require("../utils/otpGenerator");
 const jwtToken = require("../utils/jwtToken");
@@ -65,7 +66,7 @@ const register = async (req, res) => {
     }
 };
 
-const verifyUser = async (req, res) => {
+const verifiyUser = async (req, res) => {
     const { email, otp } = req.body;
     if (!email || !otp) {
         return res.status(400).json({ message: "All fields are required" });
@@ -201,6 +202,87 @@ const logout = async (req, res) => {
     }
 };
 
+const sendForgotPasswordOTP = async (req, res) => {
+    const {email} = req.body;
+    if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+    }
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "There is no account with this email" });
+        }
+        const OTP = otpGenerator();
+        const mailOptions = {
+            email,
+            subject: "Do It - Forget Password Code",
+            text: forgotPasswordOtpEmailTemplate(OTP, 5),
+        };
+        const hashedOTP = await bcrypt.hash(OTP, 10);
+        user.forgotPasswordOTP = hashedOTP;
+        user.forgotPasswordOTPExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
+        await user.save();
+        await sendEmail(mailOptions);
+        res.status(200).json({ message: "Verification code sent successfully" });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ error: error.message || "Something went wrong" });
+    }
+};
+
+const verifiyForgotPasswordOTP = async (req, res) => {
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "If account exists, Code sent" });
+        }
+        if (!user.forgotPasswordOTPExpiry || user.forgotPasswordOTPExpiry < Date.now()) {
+            return res.status(400).json({ message: "Code has been expired" });
+        }
+        const isMatch = await bcrypt.compare(otp, user.forgotPasswordOTP);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid code" });
+        }
+
+        user.forgotPasswordOTPVerified = true
+        await user.save();
+        return res.status(200).json({ message: "Code verified successfully" });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ error: error.message || "Something went wrong" });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    const { email, newPassword } = req.body;
+    if (!newPassword) {
+        return res.status(400).json({ message: "Password is required" });
+    }
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "There is no account with this email" });
+        }
+        if (!user.forgotPasswordOTPVerified) {
+            return res.status(400).json({ message: "Code has not been verified" });
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        user.forgotPasswordOTP = undefined
+        user.forgotPasswordOTPExpiry = undefined
+        user.forgotPasswordOTPVerified = undefined
+        await user.save();
+        res.status(200).json({ message: "Password changed successfully" });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ error: error.message || "Something went wrong" });
+    }
+};
+
 const getUser = async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');
@@ -216,9 +298,12 @@ const getUser = async (req, res) => {
 
 module.exports = {
     register,
-    verifyUser,
+    verifiyUser,
     resendOTP,
     login,
     logout,
-    getUser
+    sendForgotPasswordOTP,
+    verifiyForgotPasswordOTP,
+    resetPassword,
+    getUser,
 };

@@ -2,7 +2,7 @@ import axios from "../../services/axios";
 
 export const registerUser = async (data) => axios.post('/auth/register', data);
 
-export const verifyUser = async (data) => axios.post('/auth/verifiyUser', data);
+export const verifyUser = async (data) => axios.post('/auth/verifyUser', data);
 
 export const loginUser = async (data) => axios.post('/auth/login', data);
 

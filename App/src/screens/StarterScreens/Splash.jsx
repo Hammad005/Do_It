@@ -5,13 +5,18 @@ import colors from '../../utils/colors';
 import { ICON } from '../../utils/icons';
 import { FONTS } from '../../utils/fonts';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { me } from '../../../features/auth/authThunks';
 
 const Splash = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    setTimeout(async () => {
-      navigation.replace('Services');
+    setTimeout(() => {
+      dispatch(me()).then(() => {
+        navigation.navigate('Services');
+      });
     }, 3000);
   }, [navigation]);
 

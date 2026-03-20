@@ -3,7 +3,6 @@ const dns = require('dns/promises');
 dns.setServers(['1.1.1.1']);
 
 const connectDB = async () => {
-    //
     // console.log(await dns.getServers());
     
     try {

@@ -12,7 +12,7 @@ const Splash = () => {
   useEffect(() => {
     setTimeout(async () => {
       navigation.replace('Services');
-    }, 5000);
+    }, 3000);
   }, [navigation]);
 
   return (

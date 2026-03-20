@@ -173,6 +173,7 @@ const login = async (req, res) => {
             await existingUser.save();
             await sendEmail(mailOptions);
             return res.status(202).json({
+                codeSent: true,
                 message:
                     "User is not verified yet, check your email for verification code",
                 userEmail: existingUser.email,

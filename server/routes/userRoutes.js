@@ -5,12 +5,12 @@ const router = express.Router();
 
 // User routes
 router.post('/register', userController.register);
-router.post('/verifiyUser', userController.verifiyUser);
+router.post('/verifyUser', userController.verifiyUser);
 router.post('/resendOTP', userController.resendOTP);
 router.post('/login', userController.login);
 router.post('/logout', userController.logout);
 router.post('/sendForgetPasswordOTP', userController.sendForgotPasswordOTP);
-router.post('/verifiyForgetPasswordOTP', userController.verifiyForgotPasswordOTP);
+router.post('/verifyForgetPasswordOTP', userController.verifiyForgotPasswordOTP);
 router.put('/resetPassword', userController.resetPassword);
 router.get('/me',authMiddleware, userController.getUser);
 

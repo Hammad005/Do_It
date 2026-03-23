@@ -23,7 +23,11 @@ const register = async (req, res) => {
                 return res
                     .status(401)
                     .json({ error: "Account Already exists but Invalid credentials" });
-            } else {
+            } else if (existingUser.fullName !== fullName) {
+                return res
+                    .status(401)
+                    .json({ error: "Account Already exists but Invalid credentials" });
+            }else {
                 const OTP = otpGenerator();
                 const mailOptions = {
                     email,
@@ -127,25 +131,25 @@ const verifiyUser = async (req, res) => {
 const resendOTP = async (req, res) => {
     const { email } = req.body;
     if (!email) {
-        return res.status(400).json({ message: "Email is required" });
+        return res.status(400).json({ error: "Email is required" });
     }
     try {
         const user = await User.findOne({ email });
         if (!user) {
             return res
                 .status(404)
-                .json({ message: "If account exists, verification code sent" });
+                .json({ error: "If account exists, verification code sent" });
         }
         if (user.isVerified) {
-            return res.status(409).json({ message: "User is already verified" });
+            return res.status(409).json({ error: "User is already verified" });
         }
         const now = new Date();
         if (
             user.verificationOTPExpiry &&
-            user.verificationOTPExpiry > now - 60 * 1000 // 1 min cooldown
+            user.verificationOTPExpiry < now - 60 * 1000 // 1 min cooldown
         ) {
             return res.status(429).json({
-                message: "Please wait before requesting another OTP",
+                error: "Please wait before requesting another OTP",
             });
         }
 
@@ -161,7 +165,7 @@ const resendOTP = async (req, res) => {
         user.verificationOTPExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
         await user.save();
         await sendEmail(mailOptions);
-        res.status(200).json({ message: "Verification code sent successfully" });
+        res.status(200).json({ message: `Verification code resent to ${email}` });
     } catch (error) {
         console.log(error.message);
         res.status(500).json({ error: error.message || "Something went wrong" });
@@ -171,12 +175,16 @@ const resendOTP = async (req, res) => {
 const login = async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res.status(400).json({ error: "All fields are required" });
     }
     try {
         const existingUser = await User.findOne({ email });
         if (!existingUser) {
-            return res.status(404).json({ message: "Invalid credentials" });
+            return res.status(404).json({ error: "Invalid credentials" });
+        }
+        const isMatch = await bcrypt.compare(password, existingUser.password);
+        if (!isMatch) {
+            return res.status(401).json({ error: "Invalid credentials" });
         }
         if (!existingUser.isVerified) {
             const OTP = otpGenerator();
@@ -190,16 +198,14 @@ const login = async (req, res) => {
             existingUser.verificationOTPExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
             await existingUser.save();
             await sendEmail(mailOptions);
+            const removePassword = { ...existingUser._doc };
+            delete removePassword.password;
             return res.status(202).json({
                 codeSent: true,
                 message:
                     "User is not verified yet, check your email for verification code",
-                userEmail: existingUser.email,
+                user: removePassword,
             });
-        }
-        const isMatch = await bcrypt.compare(password, existingUser.password);
-        if (!isMatch) {
-            return res.status(401).json({ message: "Invalid credentials" });
         }
         const token = jwtToken(existingUser);
         const removePassword = { ...existingUser._doc };

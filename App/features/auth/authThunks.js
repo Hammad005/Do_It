@@ -38,13 +38,15 @@ export const login = createAsyncThunk(
         try {
             const res = await loginUser(data);
             if (res.data.codeSent) {
+                Toast.show({ type: "success", text1: res.data.message });
                 return res.data;
             }
             await AsyncStorage.setItem("token", res.data.token);
+            Toast.show({ type: "success", text1: res.data.message });
             return res.data;
         } catch (error) {
-            Toast.show({ type: "error", text1: error.response?.data });
-            return thunkAPI.rejectWithValue(error.response?.data);
+            Toast.show({ type: "error", text1: error.response?.data?.error });
+            return thunkAPI.rejectWithValue(error.response?.data?.error);
         }
     }
 );
@@ -54,10 +56,12 @@ export const resendOTP = createAsyncThunk(
     async (data, thunkAPI) => {
         try {
             const res = await resendVerificationOTP(data);
+            
+            Toast.show({ type: "success", text1: res.data.message });
             return res.data;
         } catch (error) {
-            Toast.show({ type: "error", text1: error.response?.data });
-            return thunkAPI.rejectWithValue(error.response?.data);
+            Toast.show({ type: "error", text1: error.response?.data?.error });
+            return thunkAPI.rejectWithValue(error.response?.data?.error);
         }
     }
 );

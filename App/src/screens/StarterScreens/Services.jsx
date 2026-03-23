@@ -7,6 +7,7 @@ import ServicesScreenNavigators from "../../components/StarterScreens/ServicesSc
 import ServicesScreenComponents from "../../components/StarterScreens/ServicesScreenComponents"
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 const Services = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -42,8 +43,16 @@ const Services = () => {
   ];
   const navigate = useNavigation();
 
+  const {user} = useSelector(state => state.auth);
+
   const handleNext = () => {
-    if (currentIndex === 3) return navigate.replace('Login') 
+    if (currentIndex === 3) {
+      if (user) {
+        return navigate.replace('HomeMain')
+      } else {
+        return navigate.replace('Login') 
+      }
+    }
     setCurrentIndex(prev => prev + 1)
   };
   return (

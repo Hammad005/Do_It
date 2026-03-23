@@ -1,8 +1,5 @@
 import {
-  Alert,
-  Image,
   KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,51 +8,27 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import colors from '../../utils/colors';
 import LinearGradient from 'react-native-linear-gradient';
 import { FONTS } from '../../utils/fonts';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import CustomModal from '../../components/modal/CustomModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { verifyAccount } from '../../../features/auth/authThunks';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import { resendOTP, verifyAccount } from '../../../features/auth/authThunks';
+import Spinner from '../../components/Spinner';
 
 const VerifyAccount = () => {
   const [data, setAuthData] = useState({
     code: '',
   });
   const [modalVisible, setModalVisible] = useState(false);
+  const [canResend, setCanResend] = useState(false);
+  const [count, setCount] = useState(60);
   const dispatch = useDispatch();
-  const { userEmail, isVerifying } = useSelector(state => state.auth);
+  const { userEmail, isVerifying, isResending } = useSelector(
+    state => state.auth,
+  );
 
-  const spinnerValue = useSharedValue(0);
-
-  useEffect(() => {
-    if (isVerifying) {
-      spinnerValue.value = withRepeat(
-        withTiming(1, { duration: 800 }), // fast & smooth
-        -1,
-        false,
-      );
-    } else {
-      spinnerValue.value = 0; // reset when done
-    }
-  }, [isVerifying]);
-  const stylez = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          rotate: `${spinnerValue.value * 360}deg`,
-        },
-      ],
-    };
-  });
 
   const handleVerify = async () => {
     const formData = {
@@ -68,6 +41,34 @@ const VerifyAccount = () => {
       setModalVisible(true);
     }
   };
+
+  const handleResend = async () => {
+    // dispatch your resend OTP thunk here
+    const res = await dispatch(resendOTP({email: userEmail}));
+    if (res.meta.requestStatus === 'fulfilled') {
+      // reset timer
+      setCount(60);
+      setCanResend(false);
+    }
+  };
+  useEffect(() => {
+    let interval;
+
+    if (!canResend) {
+      interval = setInterval(() => {
+        setCount(prev => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            setCanResend(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, [canResend]);
   return (
     <>
       <CustomModal
@@ -123,17 +124,28 @@ const VerifyAccount = () => {
                   activeOpacity={0.85}
                 >
                   {isVerifying ? (
-                    <Animated.View style={stylez}>
-                      <EvilIcons
-                        name={'spinner-3'}
-                        size={30}
-                        color={colors.white}
-                      />
-                    </Animated.View>
+                    <Spinner/>
                   ) : (
                     <Text style={styles.btnText}>Verify</Text>
                   )}
                 </TouchableOpacity>
+
+                <View style={styles.resend}>
+                  <Text style={styles.resendText}>Didn't receive code? </Text>
+                  {!canResend ? (
+                    <>
+                      <Text style={styles.countDown}>{count}s</Text>
+                    </>
+                  ) : isResending ? (
+                    <Spinner color={colors.primary}/>
+                  ) : (
+                    <>
+                      <Pressable onPress={handleResend}>
+                        <Text style={styles.link}>Resend</Text>
+                      </Pressable>
+                    </>
+                  )}
+                </View>
               </LinearGradient>
             </View>
           </ScrollView>
@@ -237,5 +249,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 19,
     gap: 5,
+  },
+  resend: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 19,
+    gap: 5,
+  },
+  resendText: {
+    fontSize: 16,
+    color: colors.white,
+    fontFamily: FONTS.MEDIUM,
+  },
+  link: {
+    fontSize: 16,
+    color: colors.primary,
+    textDecorationLine: 'underline',
+    fontFamily: FONTS.MEDIUM,
+  },
+  countDown: {
+    fontSize: 16,
+    color: colors.primary,
+    fontFamily: FONTS.MEDIUM,
   },
 });

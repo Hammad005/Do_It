@@ -18,6 +18,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import { FONTS } from '../../utils/fonts';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '../../../features/auth/authThunks';
+import Spinner from '../../components/Spinner';
 
 const Login = () => {
   const [authData, setAuthData] = useState({
@@ -25,15 +28,17 @@ const Login = () => {
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
-
   const navigate = useNavigation();
+  const { isLoggingIn, user } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
 
-  const handleLogin = () => {
-    const formData = new FormData();
-    formData.append('email', authData.email);
-    formData.append('password', authData.password);
+  const handleLogin = async () => {
+    const formData = {
+      email: authData.email,
+      password: authData.password,
+    };
 
-    navigate.navigate('HomeMain');
+    await dispatch(login(formData));
   };
   return (
     <LinearGradient
@@ -97,11 +102,16 @@ const Login = () => {
             {/* <Text style={styles.forgotPassword}>forget password?</Text> */}
 
             <TouchableOpacity
-              style={styles.btn}
+              style={isLoggingIn ? styles.disabledBtn : styles.btn}
               onPress={handleLogin}
               activeOpacity={0.85}
+              disabled={isLoggingIn}
             >
-              <Text style={styles.btnText}>Sign In</Text>
+              {isLoggingIn ? (
+                <Spinner />
+              ) : (
+                <Text style={styles.btnText}>Sign In</Text>
+              )}
             </TouchableOpacity>
 
             <View style={styles.textInLineContainer}>
@@ -198,6 +208,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 47,
+  },
+  disabledBtn: {
+    backgroundColor: colors.primary,
+    borderRadius: 10,
+    height: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 47,
+    opacity: 0.5,
   },
   btnText: {
     color: colors.white,

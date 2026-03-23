@@ -16,17 +16,11 @@ import { ICON } from '../../utils/icons';
 import LinearGradient from 'react-native-linear-gradient';
 import { FONTS } from '../../utils/fonts';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import { useNavigation } from '@react-navigation/native';
 import CustomModal from '../../components/modal/CustomModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { register } from '../../../features/auth/authThunks';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import Spinner from '../../components/Spinner';
 
 const Signup = () => {
   const [authData, setAuthData] = useState({
@@ -39,29 +33,6 @@ const Signup = () => {
   const navigate = useNavigation();
   const dispatch = useDispatch();
   const { isSigningUp, message } = useSelector(state => state.auth);
-
-  const spinnerValue = useSharedValue(0);
-
-  useEffect(() => {
-    if (isSigningUp) {
-      spinnerValue.value = withRepeat(
-        withTiming(1, { duration: 800 }), // fast & smooth
-        -1,
-        false,
-      );
-    } else {
-      spinnerValue.value = 0; // reset when done
-    }
-  }, [isSigningUp]);
-  const stylez = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          rotate: `${spinnerValue.value * 360}deg`,
-        },
-      ],
-    };
-  });
 
   const handleSignup = async () => {
     const formData = {
@@ -167,13 +138,7 @@ const Signup = () => {
                 disabled={isSigningUp}
               >
                 {isSigningUp ? (
-                  <Animated.View style={stylez}>
-                    <EvilIcons
-                      name={'spinner-3'}
-                      size={30}
-                      color={colors.white}
-                    />
-                  </Animated.View>
+                  <Spinner />
                 ) : (
                   <Text style={styles.btnText}>Sign Up</Text>
                 )}

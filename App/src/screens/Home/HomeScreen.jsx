@@ -17,15 +17,27 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { Screen } from 'react-native-screens';
 import { ICON } from '../../utils/icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from '../../../features/auth/authThunks';
+import Spinner from '../../components/Spinner';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+  const {user, isLoggingOut} = useSelector(state => state.auth);
+  const dispatch = useDispatch();
 
   // Sort: incomplete first, completed last
   const sortedTodos = [
     ...todos.filter(item => item.completed === false),
     ...todos.filter(item => item.completed === true),
   ];
+
+  const handaleLogout = async() => {
+    const res = await dispatch(logoutUser());
+    // if (res.meta.requestStatus === 'fulfilled') {
+    //   navigation.navigate('Login');
+    // }
+  };
 
   const Header = () => {
     return (
@@ -38,12 +50,15 @@ const HomeScreen = () => {
             fadeDuration={0}
           />
           <View>
-            <Text style={styles.userName}>Hammad Khatri</Text>
-            <Text style={styles.email}>test@mail.com</Text>
+            <Text style={styles.userName}>{user?.fullName}</Text>
+            <Text style={styles.email}>{user?.email}</Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.logoutContainer}>
-          <MaterialIcons name={'logout'} size={30} color={colors.white} />
+        <TouchableOpacity style={isLoggingOut ? styles.logoutContainerDisabled : styles.logoutContainer} onPress={handaleLogout} activeOpacity={0.85} disabled={isLoggingOut}>
+          {isLoggingOut ?
+          <Spinner/>
+          : 
+          <MaterialIcons name={'logout'} size={30} color={colors.white} />}
         </TouchableOpacity>
       </View>
     );
@@ -170,6 +185,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  logoutContainerDisabled: {
+    width: 50,
+    height: 50,
+    borderRadius: 10,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.5
   },
   heading: {
     fontSize: 14,

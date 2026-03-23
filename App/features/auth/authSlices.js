@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {me, register, verifyAccount} from "./authThunks";
+import {login, logoutUser, me, register, resendOTP, verifyAccount} from "./authThunks";
 
 
 const initialState = {
@@ -7,8 +7,10 @@ const initialState = {
     userEmail: null,
     isSigningUp: false,
     isLoggingIn: false,
+    isLoggingOut: false,
     isCheckingAuth: true,
     isVerifying: false,
+    isResending: false,
     isforgatting: false,
     isForgattingVerify: false,
     isPasswordReset: false,
@@ -38,6 +40,21 @@ export const authSlice = createSlice({
             state.isCheckingAuth = false
             state.error = action.payload
         })
+
+        //Login
+        .addCase(login.pending, (state, action) => {
+            state.isLoggingIn = true
+        })
+        .addCase(login.fulfilled, (state, action) => {
+            state.isLoggingIn = false
+            state.message = action.payload.message
+            state.user = action.payload.user
+            state.userEmail = action.payload.user.email
+        })
+        .addCase(login.rejected, (state, action) => {
+            state.isLoggingIn = false
+            state.error = action.payload
+        })
         
         //Registeration
         .addCase(register.pending, (state, action) => {
@@ -64,6 +81,32 @@ export const authSlice = createSlice({
         })
         .addCase(verifyAccount.rejected, (state, action) => {
             state.isVerifying = false
+            state.error = action.payload
+        })
+
+        // Resend Verification OTP
+        .addCase(resendOTP.pending, (state, action) => {
+            state.isResending = true
+        })
+        .addCase(resendOTP.fulfilled, (state, action) => {
+            state.isResending = false
+            state.message = action.payload.message
+        })
+        .addCase(resendOTP.rejected, (state, action) => {
+            state.isResending = false
+            state.error = action.payload
+        })
+
+        // Logout
+        .addCase(logoutUser.pending, (state, action) => {
+            state.isLoggingOut = true
+        })
+        .addCase(logoutUser.fulfilled, (state, action) => {
+            state.isLoggingOut = false
+            state.user = null
+        })
+        .addCase(logoutUser.rejected, (state, action) => {
+            state.isLoggingOut = false
             state.error = action.payload
         })
     }

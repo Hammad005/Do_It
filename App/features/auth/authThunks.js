@@ -24,6 +24,7 @@ export const verifyAccount = createAsyncThunk(
         try {
             const res = await verifyUser(data);
             await AsyncStorage.setItem("token", res.data.token);
+            Toast.show({ type: "success", text1: res.data.message });
             return res.data;
         } catch (error) {
             Toast.show({ type: "error", text1: error.response?.data?.error });

@@ -5,14 +5,14 @@ import { FONTS } from '../../utils/fonts';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 
-const CustomModal = ({ visible, title, message, navigate, onClose }) => {
+const CustomModal = ({ visible, title, message, navigate, email, onClose }) => {
     const redirect = useNavigation();
     useEffect(() => {
         if (!visible) return;
 
         const timer = setTimeout(() => {
             onClose();
-            if (navigate) redirect.replace(navigate || 'Login');
+            if (navigate) redirect.replace(navigate, {userEmail: email} );
         }, 3000);
 
         return () => clearTimeout(timer);

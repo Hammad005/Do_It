@@ -52,6 +52,7 @@ const Signup = () => {
         title="Success"
         message={message}
         navigate="VerifyAccount"
+        email={authData.email}
         onClose={() => setModalVisible(false)}
       />
       <LinearGradient

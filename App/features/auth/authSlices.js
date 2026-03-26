@@ -8,6 +8,7 @@ const initialState = {
     isSigningUp: false,
     isLoggingIn: false,
     isLoggingOut: false,
+    redirectToLogin: false,
     isCheckingAuth: true,
     isVerifying: false,
     isResending: false,
@@ -24,6 +25,9 @@ export const authSlice = createSlice({
     reducers: {
         setUser: (state, action) => {
             state.user = action.payload;
+        },
+        setUserEmail: (state, action) => {
+            state.userEmail = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -49,7 +53,6 @@ export const authSlice = createSlice({
             state.isLoggingIn = false
             state.message = action.payload.message
             state.user = action.payload.user
-            state.userEmail = action.payload.user.email
         })
         .addCase(login.rejected, (state, action) => {
             state.isLoggingIn = false
@@ -63,7 +66,6 @@ export const authSlice = createSlice({
         .addCase(register.fulfilled, (state, action) => {
             state.isSigningUp = false
             state.message = action.payload.message
-            state.userEmail = action.payload.userEmail
         })
         .addCase(register.rejected, (state, action) => {
             state.isSigningUp = false
@@ -104,6 +106,7 @@ export const authSlice = createSlice({
         .addCase(logoutUser.fulfilled, (state, action) => {
             state.isLoggingOut = false
             state.user = null
+            state.redirectToLogin = true
         })
         .addCase(logoutUser.rejected, (state, action) => {
             state.isLoggingOut = false
@@ -112,6 +115,6 @@ export const authSlice = createSlice({
     }
 })
 
-export const { setUser } = authSlice.actions;
+export const { setUser, setUserEmail } = authSlice.actions;
 
 export default authSlice.reducer

@@ -12,39 +12,39 @@ import React, { useEffect, useRef, useState } from 'react';
 import colors from '../../utils/colors';
 import LinearGradient from 'react-native-linear-gradient';
 import { FONTS } from '../../utils/fonts';
-import CustomModal from '../../components/modal/CustomModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { resendOTP, verifyAccount } from '../../../features/auth/authThunks';
 import Spinner from '../../components/Spinner';
 
-const VerifyAccount = () => {
+const VerifyAccount = ({ route, navigation }) => {
+  const paramEmail = route?.params?.userEmail;
+
   const [data, setAuthData] = useState({
     code: '',
   });
-  const [modalVisible, setModalVisible] = useState(false);
   const [canResend, setCanResend] = useState(false);
   const [count, setCount] = useState(60);
   const dispatch = useDispatch();
-  const { userEmail, isVerifying, isResending } = useSelector(
+  const { isVerifying, isResending, userEmail: storeEmail  } = useSelector(
     state => state.auth,
   );
+
+  const emailToUse = storeEmail || paramEmail;
 
 
   const handleVerify = async () => {
     const formData = {
-      email: userEmail,
+      email: emailToUse,
       otp: data.code,
     };
 
-    const res = await dispatch(verifyAccount(formData));
-    if (res.meta.requestStatus === 'fulfilled') {
-      setModalVisible(true);
-    }
+    dispatch(verifyAccount(formData));
+
   };
 
   const handleResend = async () => {
     // dispatch your resend OTP thunk here
-    const res = await dispatch(resendOTP({email: userEmail}));
+    const res = await dispatch(resendOTP({email: emailToUse}));
     if (res.meta.requestStatus === 'fulfilled') {
       // reset timer
       setCount(60);
@@ -71,12 +71,6 @@ const VerifyAccount = () => {
   }, [canResend]);
   return (
     <>
-      <CustomModal
-        visible={modalVisible}
-        title={`${userEmail} is verified`}
-        navigate={'HomeMain'}
-        onClose={() => setModalVisible(false)}
-      />
       <LinearGradient
         colors={[colors.bgColor1, colors.bgColor2]}
         style={styles.mainContainer}

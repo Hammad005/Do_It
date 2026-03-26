@@ -14,9 +14,9 @@ const Stack = createStackNavigator();
 
 
 // 🔐 Auth Stack
-const AuthNavigator = () => {
+const AuthNavigator = ({initialRouteName}) => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName={initialRouteName} screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Services" component={Services} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Signup" component={Signup} />
@@ -42,19 +42,27 @@ const AppNavigator = () => {
 
 // 🚀 Root Navigation (MAIN LOGIC)
 const StackNavigation = () => {
-  const { user, isLoading } = useSelector((state) => state.auth);
+  const { user, isCheckingAuth, redirectToLogin } = useSelector((state) => state.auth);
 
   // ✅ Splash while loading (token check / async storage etc.)
-  if (isLoading) {
+  if (isCheckingAuth) {
     return <Splash />;
   }
+
+   // Decide initial screen for Auth stack
+  const authInitialRoute = redirectToLogin ? "Login" : "Services";
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       
       {!user ? (
         // ❌ Not logged in
-        <Stack.Screen name="Auth" component={AuthNavigator} />
+         <Stack.Screen
+          name="Auth"
+          options={{ headerShown: false }}
+        >
+          {() => <AuthNavigator initialRouteName={authInitialRoute} />}
+        </Stack.Screen>
       
       ) : !user.isVerified ? (
         // ⚠️ Logged in but not verified

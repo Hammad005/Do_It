@@ -14,9 +14,7 @@ const Splash = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      dispatch(me()).then(() => {
-        navigation.navigate('Services');
-      });
+      dispatch(me());
     }, 3000);
   }, [navigation]);
 

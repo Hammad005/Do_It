@@ -21,6 +21,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../../features/auth/authThunks';
 import Spinner from '../../components/Spinner';
+import { setUserEmail } from '../../../features/auth/authSlices';
 
 const Login = () => {
   const [authData, setAuthData] = useState({
@@ -38,6 +39,7 @@ const Login = () => {
       password: authData.password,
     };
 
+    dispatch(setUserEmail(authData.email));
     await dispatch(login(formData));
   };
   return (

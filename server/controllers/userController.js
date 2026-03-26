@@ -43,7 +43,6 @@ const register = async (req, res) => {
                     success: true,
                     message:
                         "Account is not verified yet, check your email for verification code",
-                    userEmail: existingUser.email,
                 });
             }
         }
@@ -71,7 +70,6 @@ const register = async (req, res) => {
             success: true,
             message:
                 "Account created successfully, check your email for verification code",
-            userEmail: user.email,
         });
     } catch (error) {
         console.log(error.message);
@@ -118,7 +116,7 @@ const verifiyUser = async (req, res) => {
         res
             .status(200)
             .json({
-                message: "User verified successfully",
+                message: `${removePassword.fullName} is verified successfully`,
                 token,
                 user: removePassword,
             });
@@ -198,13 +196,13 @@ const login = async (req, res) => {
             existingUser.verificationOTPExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
             await existingUser.save();
             await sendEmail(mailOptions);
-            const removePassword = { ...existingUser._doc };
-            delete removePassword.password;
             return res.status(202).json({
                 codeSent: true,
                 message:
                     "User is not verified yet, check your email for verification code",
-                user: removePassword,
+                user: {
+                    isVerified: existingUser.isVerified,
+                },
             });
         }
         const token = jwtToken(existingUser);

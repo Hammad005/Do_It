@@ -7,6 +7,9 @@ import Splash from '../screens/StarterScreens/Splash';
 import Services from '../screens/StarterScreens/Services';
 import Login from '../screens/auth/Login';
 import Signup from '../screens/auth/Signup';
+import ForgotPassword from '../screens/auth/ForgotPassword';
+import ForgotPasswordCodeVerification from '../screens/auth/ForgotPasswordCodeVerification';
+import ResetPassword from '../screens/auth/ResetPassword';
 import VerifyAccount from '../screens/auth/VerifyAccount';
 import HomeMain from '../screens/Home/HomeMain';
 
@@ -20,6 +23,9 @@ const AuthNavigator = ({initialRouteName}) => {
       <Stack.Screen name="Services" component={Services} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Signup" component={Signup} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+      <Stack.Screen name="ForgotPasswordCodeVerification" component={ForgotPasswordCodeVerification} />
+      <Stack.Screen name="resetPassword" component={ResetPassword} />
       <Stack.Screen
         name="VerifyAccount"
         component={VerifyAccount}

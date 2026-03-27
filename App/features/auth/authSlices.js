@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {login, logoutUser, me, register, resendOTP, verifyAccount} from "./authThunks";
+import {login, logoutUser, me, register, resendForgotPasswordCode, resendOTP, resetUserPassword, sendForgotPasswordCode, verifyAccount, verifyForgotPasswordCode} from "./authThunks";
 
 
 const initialState = {
@@ -12,6 +12,7 @@ const initialState = {
     isCheckingAuth: true,
     isVerifying: false,
     isResending: false,
+    isResendingForgotPasswordCode: false,
     isforgatting: false,
     isForgattingVerify: false,
     isPasswordReset: false,
@@ -99,6 +100,58 @@ export const authSlice = createSlice({
             state.error = action.payload
         })
 
+        //Forgot Password
+        .addCase(sendForgotPasswordCode.pending, (state, action) => {
+            state.isforgatting = true
+        })
+        .addCase(sendForgotPasswordCode.fulfilled, (state, action) => {
+            state.isforgatting = false
+            state.message = action.payload.message
+        })
+        .addCase(sendForgotPasswordCode.rejected, (state, action) => {
+            state.isforgatting = false
+            state.error = action.payload
+        })
+
+        //Forgot Password Verification
+        .addCase(verifyForgotPasswordCode.pending, (state, action) => {
+            state.isForgattingVerify = true
+        })
+        .addCase(verifyForgotPasswordCode.fulfilled, (state, action) => {
+            state.isForgattingVerify = false
+            state.message = action.payload.message
+        })
+        .addCase(verifyForgotPasswordCode.rejected, (state, action) => {
+            state.isForgattingVerify = false
+            state.error = action.payload
+        })
+
+        //Resend Forgot Password Code
+        .addCase(resendForgotPasswordCode.pending, (state, action) => {
+            state.isResendingForgotPasswordCode = true
+        })
+        .addCase(resendForgotPasswordCode.fulfilled, (state, action) => {
+            state.isResendingForgotPasswordCode = false
+            state.message = action.payload.message
+        })
+        .addCase(resendForgotPasswordCode.rejected, (state, action) => {
+            state.isResendingForgotPasswordCode = false
+            state.error = action.payload
+        })
+
+        //Reset Password
+        .addCase(resetUserPassword.pending, (state, action) => {
+            state.isPasswordReset = true
+        })
+        .addCase(resetUserPassword.fulfilled, (state, action) => {
+            state.isPasswordReset = false
+            state.message = action.payload.message
+        })
+        .addCase(resetUserPassword.rejected, (state, action) => {
+            state.isPasswordReset = false
+            state.error = action.payload
+        })
+
         // Logout
         .addCase(logoutUser.pending, (state, action) => {
             state.isLoggingOut = true
@@ -107,6 +160,8 @@ export const authSlice = createSlice({
             state.isLoggingOut = false
             state.user = null
             state.redirectToLogin = true
+            state.message = null
+            state.error = null
         })
         .addCase(logoutUser.rejected, (state, action) => {
             state.isLoggingOut = false

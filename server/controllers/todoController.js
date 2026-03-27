@@ -3,7 +3,7 @@ const Todo = require("../model/Todo");
 const createTodo = async (req, res) => {
     const { title, description, date, time } = req.body;
     if (!title || !description || !date || !time) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res.status(400).json({ error: "All fields are required" });
     }
     try {
         const todo = await Todo.create({ user: req.user._id, title, description, date, time });
@@ -27,12 +27,12 @@ const getTodos = async (req, res) => {
 const updateTodo = async (req, res) => {
     const { title, description, date, time } = req.body;
     if (!title || !description || !date || !time) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res.status(400).json({ error: "All fields are required" });
     }
     try {
         const todo = await Todo.findById(req.params.id);
         if (!todo) {
-            return res.status(404).json({ message: "Todo not found" });
+            return res.status(404).json({ error: "Todo not found" });
         }
         todo.title = title;
         todo.description = description;
@@ -50,7 +50,7 @@ const deleteTodo = async (req, res) => {
     try {
         const todo = await Todo.findByIdAndDelete(req.params.id);
         if (!todo) {
-            return res.status(404).json({ message: "Todo not found" });
+            return res.status(404).json({ error: "Todo not found" });
         }
         res.status(200).json({ success: true, message: "Todo deleted successfully" });
     } catch (error) {
@@ -63,7 +63,7 @@ const toggleCompletion = async (req, res) => {
     try {
         const todo = await Todo.findById(req.params.id);
         if (!todo) {
-            return res.status(404).json({ message: "Todo not found" });
+            return res.status(404).json({ error: "Todo not found" });
         }
         todo.completed = !todo.completed;
         await todo.save();

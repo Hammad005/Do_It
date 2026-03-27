@@ -101,7 +101,10 @@ const Login = () => {
               </Pressable>
             </View>
 
-            {/* <Text style={styles.forgotPassword}>forget password?</Text> */}
+            {/* Forgot Password */}
+            <Pressable onPress={() => navigate.navigate('ForgotPassword')} disabled={isLoggingIn}>
+            <Text style={styles.forgotPassword}>forget password?</Text>
+            </Pressable>
 
             <TouchableOpacity
               style={isLoggingIn ? styles.disabledBtn : styles.btn}

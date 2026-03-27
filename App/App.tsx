@@ -17,7 +17,7 @@ const App = () => {
           </NavigationContainer>
         </BottomSheetProvider>
       </GestureHandlerRootView>
-      <Toast />
+      <Toast  />
     </Provider>
   );
 };

@@ -13,24 +13,28 @@ import colors from '../../utils/colors';
 import LinearGradient from 'react-native-linear-gradient';
 import { FONTS } from '../../utils/fonts';
 import { useDispatch, useSelector } from 'react-redux';
-import { resendOTP, verifyAccount } from '../../../features/auth/authThunks';
+import {
+  resendForgotPasswordCode,
+  verifyForgotPasswordCode,
+} from '../../../features/auth/authThunks';
 import Spinner from '../../components/Spinner';
+import CustomModal from '../../components/modal/CustomModal';
 
-const VerifyAccount = ({ route, navigation }) => {
+const ForgotPasswordCodeVerification = ({ route, navigation }) => {
   const paramEmail = route?.params?.userEmail;
 
   const [data, setAuthData] = useState({
     code: '',
   });
+  const [modalVisible, setModalVisible] = useState(false);
   const [canResend, setCanResend] = useState(false);
   const [count, setCount] = useState(60);
   const dispatch = useDispatch();
-  const { isVerifying, isResending, userEmail: storeEmail  } = useSelector(
+  const { isForgattingVerify, isResendingForgotPasswordCode, message } = useSelector(
     state => state.auth,
   );
 
-  const emailToUse = storeEmail || paramEmail;
-
+  const emailToUse = paramEmail;
 
   const handleVerify = async () => {
     const formData = {
@@ -38,13 +42,15 @@ const VerifyAccount = ({ route, navigation }) => {
       otp: data.code,
     };
 
-    dispatch(verifyAccount(formData));
-
+    const res = await dispatch(verifyForgotPasswordCode(formData));
+    if (res.meta.requestStatus === 'fulfilled') {
+      setModalVisible(true);
+    }
   };
 
   const handleResend = async () => {
     // dispatch your resend OTP thunk here
-    const res = await dispatch(resendOTP({email: emailToUse}));
+    const res = await dispatch(resendForgotPasswordCode({ email: emailToUse }));
     if (res.meta.requestStatus === 'fulfilled') {
       // reset timer
       setCount(60);
@@ -68,9 +74,17 @@ const VerifyAccount = ({ route, navigation }) => {
     }
 
     return () => clearInterval(interval);
-  }, [canResend]);
+  }, [canResend, count]);
   return (
     <>
+      <CustomModal
+        visible={modalVisible}
+        title="Success"
+        message={message}
+        navigate="resetPassword"
+        email={emailToUse}
+        onClose={() => setModalVisible(false)}
+      />
       <LinearGradient
         colors={[colors.bgColor1, colors.bgColor2]}
         style={styles.mainContainer}
@@ -83,7 +97,7 @@ const VerifyAccount = ({ route, navigation }) => {
             style={{ flex: 1 }}
           >
             <View style={styles.container}>
-              <Text style={styles.mainTitle}>Verify account</Text>
+              <Text style={styles.mainTitle}>Verification</Text>
 
               {/* Box */}
               <LinearGradient
@@ -92,12 +106,9 @@ const VerifyAccount = ({ route, navigation }) => {
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
               >
-                <View style={styles.logoContainer}>
-                  <Text style={styles.titleLogo}>Do It</Text>
-                </View>
+                <Text style={styles.titleLogo}>Do It</Text>
                 <Text style={styles.smallText}>
-                  By verifying your account, you data will be secured and be
-                  default you are accepting our terms and policies
+                  Enter the code to reset your password
                 </Text>
 
                 {/* Code Input */}
@@ -113,13 +124,13 @@ const VerifyAccount = ({ route, navigation }) => {
                 </View>
 
                 <TouchableOpacity
-                  style={isVerifying ? styles.disabledBtn : styles.btn}
+                  style={isForgattingVerify ? styles.disabledBtn : styles.btn}
                   onPress={handleVerify}
                   activeOpacity={0.85}
-                  disabled={isVerifying}
+                  disabled={isForgattingVerify}
                 >
-                  {isVerifying ? (
-                    <Spinner/>
+                  {isForgattingVerify ? (
+                    <Spinner />
                   ) : (
                     <Text style={styles.btnText}>Verify</Text>
                   )}
@@ -131,8 +142,8 @@ const VerifyAccount = ({ route, navigation }) => {
                     <>
                       <Text style={styles.countDown}>{count}s</Text>
                     </>
-                  ) : isResending ? (
-                    <Spinner color={colors.primary}/>
+                  ) : isResendingForgotPasswordCode ? (
+                    <Spinner color={colors.primary} />
                   ) : (
                     <>
                       <Pressable onPress={handleResend}>
@@ -150,7 +161,7 @@ const VerifyAccount = ({ route, navigation }) => {
   );
 };
 
-export default VerifyAccount;
+export default ForgotPasswordCodeVerification;
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -178,9 +189,6 @@ const styles = StyleSheet.create({
     marginTop: 48,
     padding: 42,
   },
-  logoContainer: {
-    height: 63,
-  },
   titleLogo: {
     fontSize: 36,
     color: colors.white,
@@ -192,14 +200,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.white,
     fontFamily: FONTS.MEDIUM,
-    marginTop: 50,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.white,
     borderRadius: 5,
-    marginTop: 55,
+    marginTop: 35,
     paddingHorizontal: 10,
     width: '100%',
   },

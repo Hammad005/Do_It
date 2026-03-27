@@ -23,7 +23,7 @@ import Spinner from '../../components/Spinner';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const {user, isLoggingOut} = useSelector(state => state.auth);
+  const { user, isLoggingOut } = useSelector(state => state.auth);
   const dispatch = useDispatch();
 
   // Sort: incomplete first, completed last
@@ -32,7 +32,7 @@ const HomeScreen = () => {
     ...todos.filter(item => item.completed === true),
   ];
 
-  const handaleLogout = async() => {
+  const handaleLogout = async () => {
     const res = await dispatch(logoutUser());
     // if (res.meta.requestStatus === 'fulfilled') {
     //   navigation.navigate('Login');
@@ -54,11 +54,21 @@ const HomeScreen = () => {
             <Text style={styles.email}>{user?.email}</Text>
           </View>
         </View>
-        <TouchableOpacity style={isLoggingOut ? styles.logoutContainerDisabled : styles.logoutContainer} onPress={handaleLogout} activeOpacity={0.85} disabled={isLoggingOut}>
-          {isLoggingOut ?
-          <Spinner/>
-          : 
-          <MaterialIcons name={'logout'} size={30} color={colors.white} />}
+        <TouchableOpacity
+          style={
+            isLoggingOut
+              ? styles.logoutContainerDisabled
+              : styles.logoutContainer
+          }
+          onPress={handaleLogout}
+          activeOpacity={0.85}
+          disabled={isLoggingOut}
+        >
+          {isLoggingOut ? (
+            <Spinner />
+          ) : (
+            <MaterialIcons name={'logout'} size={30} color={colors.white} />
+          )}
         </TouchableOpacity>
       </View>
     );
@@ -130,6 +140,10 @@ const HomeScreen = () => {
           keyExtractor={item => item.title}
           // ListHeaderComponent={Header}
           showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <Text style={styles.noTaskText}>No Task Found</Text>
+          }
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
           renderItem={({ item, index }) => (
             <>
               {renderSectionHeader({ index })}
@@ -193,7 +207,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    opacity: 0.5
+    opacity: 0.5,
   },
   heading: {
     fontSize: 14,
@@ -227,5 +241,12 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.REGULAR,
     letterSpacing: 1,
     color: 'rgba(0, 0, 0, 0.9)',
+  },
+  noTaskText: {
+    fontSize: 14,
+    fontFamily: FONTS.MEDIUM,
+    color: colors.white,
+    letterSpacing: 1,
+    textAlign: 'center',
   },
 });

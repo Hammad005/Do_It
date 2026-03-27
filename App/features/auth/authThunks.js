@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { getUser, loginUser, logout, registerUser, resendVerificationOTP, resetPassword, sendForgotPasswordOTP, verifyForgetPasswordOTP, verifyUser } from "./authServices";
+import { getUser, loginUser, logout, registerUser, resendForgotPasswordOTP, resendVerificationOTP, resetPassword, sendForgotPasswordOTP, verifyForgetPasswordOTP, verifyUser } from "./authServices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 
@@ -74,8 +74,8 @@ export const sendForgotPasswordCode = createAsyncThunk(
             const res = await sendForgotPasswordOTP(data);
             return res.data;
         } catch (error) {
-            Toast.show({ type: "error", text1: error.response?.data });
-            return thunkAPI.rejectWithValue(error.response?.data);
+            Toast.show({ type: "error", text1: error.response?.data?.error });
+            return thunkAPI.rejectWithValue(error.response?.data?.error);
         }
     }
 );
@@ -87,8 +87,23 @@ export const verifyForgotPasswordCode = createAsyncThunk(
             const res = await verifyForgetPasswordOTP(data);
             return res.data;
         } catch (error) {
-            Toast.show({ type: "error", text1: error.response?.data });
-            return thunkAPI.rejectWithValue(error.response?.data);
+            Toast.show({ type: "error", text1: error.response?.data?.error });
+            return thunkAPI.rejectWithValue(error.response?.data?.error);
+        }
+    }
+);
+
+export const resendForgotPasswordCode = createAsyncThunk(
+    "auth/resendForgotPasswordCode",
+    async (data, thunkAPI) => {
+        try {
+            const res = await resendForgotPasswordOTP(data);
+            
+            Toast.show({ type: "success", text1: res.data.message });
+            return res.data;
+        } catch (error) {
+            Toast.show({ type: "error", text1: error.response?.data?.error });
+            return thunkAPI.rejectWithValue(error.response?.data?.error);
         }
     }
 );
@@ -100,8 +115,8 @@ export const resetUserPassword = createAsyncThunk(
             const res = await resetPassword(data);
             return res.data;
         } catch (error) {
-            Toast.show({ type: "error", text1: error.response?.data });
-            return thunkAPI.rejectWithValue(error.response?.data);
+            Toast.show({ type: "error", text1: error.response?.data?.error });
+            return thunkAPI.rejectWithValue(error.response?.data?.error);
         }
     }
 );

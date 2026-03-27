@@ -11,6 +11,7 @@ router.post('/login', userController.login);
 router.post('/logout', userController.logout);
 router.post('/sendForgetPasswordOTP', userController.sendForgotPasswordOTP);
 router.post('/verifyForgetPasswordOTP', userController.verifiyForgotPasswordOTP);
+router.post('/resendForgotPasswordOTP', userController.resendForgotPasswordOTP);
 router.put('/resetPassword', userController.resetPassword);
 router.get('/me',authMiddleware, userController.getUser);
 

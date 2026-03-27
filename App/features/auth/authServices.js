@@ -12,6 +12,8 @@ export const sendForgotPasswordOTP = async (data) => axios.post('/auth/sendForge
 
 export const verifyForgetPasswordOTP = async (data) => axios.post('/auth/verifyForgetPasswordOTP', data);
 
+export const resendForgotPasswordOTP = async (data) => axios.post('/auth/resendForgotPasswordOTP', data);
+
 export const resetPassword = async (data) => axios.put('/auth/resetPassword', data);
 
 export const logout = async () => axios.post('/auth/logout');

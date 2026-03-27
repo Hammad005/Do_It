@@ -8,69 +8,46 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import colors from '../../utils/colors';
 import LinearGradient from 'react-native-linear-gradient';
 import { FONTS } from '../../utils/fonts';
-import { useDispatch, useSelector } from 'react-redux';
-import { resendOTP, verifyAccount } from '../../../features/auth/authThunks';
+import CustomModal from '../../components/modal/CustomModal';
 import Spinner from '../../components/Spinner';
+import { useDispatch, useSelector } from 'react-redux';
+import { sendForgotPasswordCode } from '../../../features/auth/authThunks';
 
-const VerifyAccount = ({ route, navigation }) => {
-  const paramEmail = route?.params?.userEmail;
-
-  const [data, setAuthData] = useState({
-    code: '',
-  });
-  const [canResend, setCanResend] = useState(false);
-  const [count, setCount] = useState(60);
+const ForgotPassword = () => {
+  
+  const [email, setEmail] = useState('')
+  const [modalVisible, setModalVisible] = useState(false);
+  const { isforgatting, message } = useSelector(state => state.auth);
   const dispatch = useDispatch();
-  const { isVerifying, isResending, userEmail: storeEmail  } = useSelector(
-    state => state.auth,
-  );
-
-  const emailToUse = storeEmail || paramEmail;
+  
 
 
   const handleVerify = async () => {
     const formData = {
-      email: emailToUse,
-      otp: data.code,
+      email: email,
     };
 
-    dispatch(verifyAccount(formData));
-
-  };
-
-  const handleResend = async () => {
-    // dispatch your resend OTP thunk here
-    const res = await dispatch(resendOTP({email: emailToUse}));
+    const res = await dispatch(sendForgotPasswordCode(formData));
     if (res.meta.requestStatus === 'fulfilled') {
-      // reset timer
-      setCount(60);
-      setCanResend(false);
+      setModalVisible(true);
     }
   };
-  useEffect(() => {
-    let interval;
 
-    if (!canResend) {
-      interval = setInterval(() => {
-        setCount(prev => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            setCanResend(true);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-
-    return () => clearInterval(interval);
-  }, [canResend]);
+  
   return (
     <>
+    <CustomModal
+            visible={modalVisible}
+            title="Success"
+            message={message}
+            navigate="ForgotPasswordCodeVerification"
+            email={email}
+            onClose={() => setModalVisible(false)}
+          />
       <LinearGradient
         colors={[colors.bgColor1, colors.bgColor2]}
         style={styles.mainContainer}
@@ -83,7 +60,7 @@ const VerifyAccount = ({ route, navigation }) => {
             style={{ flex: 1 }}
           >
             <View style={styles.container}>
-              <Text style={styles.mainTitle}>Verify account</Text>
+              <Text style={styles.mainTitle}>Forgot Password</Text>
 
               {/* Box */}
               <LinearGradient
@@ -92,55 +69,36 @@ const VerifyAccount = ({ route, navigation }) => {
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
               >
-                <View style={styles.logoContainer}>
-                  <Text style={styles.titleLogo}>Do It</Text>
-                </View>
+                <Text style={styles.titleLogo}>Do It</Text>
                 <Text style={styles.smallText}>
-                  By verifying your account, you data will be secured and be
-                  default you are accepting our terms and policies
+                  Enter your email to receive a verification code to reset your password 
                 </Text>
 
                 {/* Code Input */}
                 <View style={styles.inputContainer}>
                   <TextInput
-                    keyboardType="decimal-pad"
-                    value={data.code}
-                    onChangeText={text => setAuthData({ ...data, code: text })}
-                    placeholder="Verification code"
+                    keyboardType="email-address"
+                    value={email}
+                    onChangeText={text => setEmail(text)}
+                    placeholder="Email"
                     placeholderTextColor={colors.authInputPlaceholder}
                     style={styles.input}
                   />
                 </View>
 
                 <TouchableOpacity
-                  style={isVerifying ? styles.disabledBtn : styles.btn}
+                  style={isforgatting ? styles.disabledBtn : styles.btn}
                   onPress={handleVerify}
                   activeOpacity={0.85}
-                  disabled={isVerifying}
+                  disabled={isforgatting}
                 >
-                  {isVerifying ? (
+                  {isforgatting ? (
                     <Spinner/>
                   ) : (
-                    <Text style={styles.btnText}>Verify</Text>
+                    <Text style={styles.btnText}>Submit</Text>
                   )}
                 </TouchableOpacity>
 
-                <View style={styles.resend}>
-                  <Text style={styles.resendText}>Didn't receive code? </Text>
-                  {!canResend ? (
-                    <>
-                      <Text style={styles.countDown}>{count}s</Text>
-                    </>
-                  ) : isResending ? (
-                    <Spinner color={colors.primary}/>
-                  ) : (
-                    <>
-                      <Pressable onPress={handleResend}>
-                        <Text style={styles.link}>Resend</Text>
-                      </Pressable>
-                    </>
-                  )}
-                </View>
               </LinearGradient>
             </View>
           </ScrollView>
@@ -150,7 +108,7 @@ const VerifyAccount = ({ route, navigation }) => {
   );
 };
 
-export default VerifyAccount;
+export default ForgotPassword;
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -178,9 +136,6 @@ const styles = StyleSheet.create({
     marginTop: 48,
     padding: 42,
   },
-  logoContainer: {
-    height: 63,
-  },
   titleLogo: {
     fontSize: 36,
     color: colors.white,
@@ -192,7 +147,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.white,
     fontFamily: FONTS.MEDIUM,
-    marginTop: 50,
+    textAlign: 'center',
+    marginTop: 15,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -237,35 +193,5 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.MEDIUM,
     fontSize: 18,
     letterSpacing: 1,
-  },
-  textInLineContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 19,
-    gap: 5,
-  },
-  resend: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 19,
-    gap: 5,
-  },
-  resendText: {
-    fontSize: 16,
-    color: colors.white,
-    fontFamily: FONTS.MEDIUM,
-  },
-  link: {
-    fontSize: 16,
-    color: colors.primary,
-    textDecorationLine: 'underline',
-    fontFamily: FONTS.MEDIUM,
-  },
-  countDown: {
-    fontSize: 16,
-    color: colors.primary,
-    fontFamily: FONTS.MEDIUM,
   },
 });

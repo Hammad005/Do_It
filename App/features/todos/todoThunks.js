@@ -64,7 +64,7 @@ export const deleteTodo = createAsyncThunk(
         try {
             const res = await deleteMyTodo(id);
             Toast.show({ type: "success", text1: res.data.message });
-            return res.data;
+            return { ...res.data, id };
         } catch (error) {
             Toast.show({ type: "error", text1: error.response?.data?.error });
             return thunkAPI.rejectWithValue(error.response?.data?.error);

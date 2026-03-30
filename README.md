@@ -94,17 +94,3 @@ Contributing
 
 - Open an issue or a PR describing the change you want to make.
 - Keep code style consistent with existing files.
-
-License
--------
-
-This project does not include a license file. Add one if you plan to publish.
-
----
-
-If you'd like, I can also:
-
-- add a quick start script that runs both server and app together
-- add example `.env.sample` in `server/`
-
-Updated README for this project.

@@ -8,20 +8,22 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import colors from '../../utils/colors';
 import LinearGradient from 'react-native-linear-gradient';
-import { todos } from '../../utils/dummyData';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FONTS } from '../../utils/fonts';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import TodoSearchHeader from '../../components/todos/TodoSearchHeader';
-import { getDateTime } from '../../utils/getDateTime';
+import { formatDateLabel, formatTime12Hour, getDateTime } from '../../utils/getDateTime';
 import CreateTodoButton from '../../components/createTodo/CreateTodoButton';
 import CreateTodoBottomSheet from '../../components/createTodo/CreateTodoBottomSheet';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+import Spinner from '../../components/Spinner';
 
 const TodosScreen = () => {
+  const { todos, loading } = useSelector(state => state.todo);
   const [filteredTodo, setFilteredTodo] = useState(todos);
   const [search, setSearch] = useState('');
   const [filterationOptions, setFilterationOptions] = useState('All');
@@ -47,16 +49,6 @@ const TodosScreen = () => {
     if (filterOption === 'Incomplete') {
       data = data.filter(item => item.completed === false);
     }
-
-    // sorting
-    if (filterOption === 'Ascending') {
-      data.sort((a, b) => getDateTime(a) - getDateTime(b));
-    }
-
-    if (filterOption === 'Descending') {
-      data.sort((a, b) => getDateTime(b) - getDateTime(a));
-    }
-
     setFilteredTodo(data);
   };
 
@@ -95,9 +87,9 @@ const TodosScreen = () => {
             />
           )}
           <View>
-            <Text style={styles.boxTitle}>{item.title}</Text>
+            <Text style={styles.boxTitle}>{item.title.length > 20 ? `${item.title.slice(0, 20)}...` : item.title}</Text>
             <Text style={styles.boxDate}>
-              {item.date} | {item.time}
+              {formatDateLabel(item.date)} | {formatTime12Hour(item.time)}
             </Text>
           </View>
         </View>
@@ -118,6 +110,11 @@ const TodosScreen = () => {
     return null;
   };
 
+  // Update filteredTodo whenever todos change
+useEffect(() => {
+  applyFilters(search, filterationOptions);
+}, [todos, search, filterationOptions]);
+
   return (
     <LinearGradient
       colors={[colors.bgColor1, colors.bgColor2]}
@@ -135,11 +132,16 @@ const TodosScreen = () => {
 
         <FlatList
           data={filteredTodo}
-          keyExtractor={item => item.title}
+          keyExtractor={item => item._id}
           // ListHeaderComponent={<TodoSearchHeader search={search} handleSearch={handleSearch}/>}
           ListEmptyComponent={
-            <Text style={styles.noTaskText}>No Task Found</Text>
+            loading ? (
+              <Spinner />
+            ) : (
+              <Text style={styles.noTaskText}>No Task Found</Text>
+            )
           }
+          contentContainerStyle={{ flexGrow: 1, justifyContent: loading || todos.length === 0 ? 'center' : 'start' }}
           showsVerticalScrollIndicator={false}
           renderItem={({ item, index }) => (
             <>

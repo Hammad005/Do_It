@@ -10,7 +10,6 @@ import {
 import React, { useState } from 'react';
 import colors from '../../utils/colors';
 import LinearGradient from 'react-native-linear-gradient';
-import { todos } from '../../utils/dummyData';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FONTS } from '../../utils/fonts';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -20,10 +19,12 @@ import { ICON } from '../../utils/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../../../features/auth/authThunks';
 import Spinner from '../../components/Spinner';
+import { formatDateLabel, formatTime12Hour } from '../../utils/getDateTime';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const { user, isLoggingOut } = useSelector(state => state.auth);
+  const { todos, loading } = useSelector(state => state.todo);
   const dispatch = useDispatch();
 
   // Sort: incomplete first, completed last
@@ -33,10 +34,7 @@ const HomeScreen = () => {
   ];
 
   const handaleLogout = async () => {
-    const res = await dispatch(logoutUser());
-    // if (res.meta.requestStatus === 'fulfilled') {
-    //   navigation.navigate('Login');
-    // }
+    dispatch(logoutUser());
   };
 
   const Header = () => {
@@ -82,7 +80,6 @@ const HomeScreen = () => {
           navigation.navigate('Todos', {
             screen: 'ViewTodo',
             params: { todo: item },
-            // merge: true,
           })
         }
       >
@@ -99,9 +96,9 @@ const HomeScreen = () => {
             />
           )}
           <View>
-            <Text style={styles.boxTitle}>{item.title}</Text>
+            <Text style={styles.boxTitle}>{item.title.length > 20 ? `${item.title.slice(0, 20)}...` : item.title}</Text>
             <Text style={styles.boxDate}>
-              {item.date} | {item.time}
+              {formatDateLabel(item.date)} | {formatTime12Hour(item.time)}
             </Text>
           </View>
         </View>
@@ -137,13 +134,17 @@ const HomeScreen = () => {
         <Header />
         <FlatList
           data={sortedTodos}
-          keyExtractor={item => item.title}
+          keyExtractor={item => item._id}
           // ListHeaderComponent={Header}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <Text style={styles.noTaskText}>No Task Found</Text>
+            loading ? (
+              <Spinner />
+            ) : (
+              <Text style={styles.noTaskText}>No Task Found</Text>
+            )
           }
-          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+          contentContainerStyle={{ flexGrow: 1, justifyContent: loading || todos.length === 0 ? 'center' : 'start' }}
           renderItem={({ item, index }) => (
             <>
               {renderSectionHeader({ index })}

@@ -10,10 +10,11 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../../utils/colors';
 import { Calendar } from 'react-native-calendars';
-import { todos } from '../../utils/dummyData';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { FONTS } from '../../utils/fonts';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+import { formatDateLabel, formatTime12Hour } from '../../utils/getDateTime';
 
 const CalendarMainScreen = () => {
   const navigation = useNavigation();
@@ -21,6 +22,7 @@ const CalendarMainScreen = () => {
   const [currentMonth, setCurrentMonth] = useState(
     new Date().toISOString().split('T')[0],
   );
+  const { todos } = useSelector(state => state.todo);
 
   const markedDates = useMemo(() => {
     const marks = {};
@@ -59,8 +61,8 @@ const CalendarMainScreen = () => {
   }, [selected]);
 
   const sortedTodos = useMemo(() => {
-    return todos.filter(item => item.date === selected);
-  }, [selected]);
+    return todos.filter(item => item.date?.split('T')[0] === selected);
+  }, [selected, todos]);
 
   useFocusEffect(
     useCallback(() => {
@@ -95,9 +97,9 @@ const CalendarMainScreen = () => {
             />
           )}
           <View>
-            <Text style={styles.boxTitle}>{item.title}</Text>
+            <Text style={styles.boxTitle}>{item.title.length > 20 ? `${item.title.slice(0, 20)}...` : item.title}</Text>
             <Text style={styles.boxDate}>
-              {item.date} | {item.time}
+              {formatDateLabel(item.date)} | {formatTime12Hour(item.time)}
             </Text>
           </View>
         </View>
@@ -166,7 +168,7 @@ const CalendarMainScreen = () => {
         {/* <Header /> */}
         <FlatList
           data={sortedTodos}
-          keyExtractor={item => item.title}
+          keyExtractor={item => item._id}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={<Header />}
           contentContainerStyle={{

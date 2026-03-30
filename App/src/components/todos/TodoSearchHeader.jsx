@@ -11,7 +11,7 @@ const TodoSearchHeader = ({
   handleFilter,
 }) => {
 
-  const options = ['Completed', 'Incomplete', 'Ascending', 'Descending'];
+  const options = ['Completed', 'Incomplete'];
 
   return (
     <View style={styles.headerContainer}>

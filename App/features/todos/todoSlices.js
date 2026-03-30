@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {createTodo, getTodos, updateTodo} from "./todoThunks";
+import {createTodo, deleteTodo, getTodos, toggleTodo, updateTodo} from "./todoThunks";
 
 const initialState = {
     todos: [],
@@ -41,7 +41,7 @@ export const todoSlice = createSlice({
         .addCase(createTodo.fulfilled, (state, action) => {
             state.isAddingTodo = false
             state.message = action.payload.message
-            state.todos.push(action.payload.todo)
+            state.todos.push(action.payload?.todo)
         })
         .addCase(createTodo.rejected, (state, action) => {
             state.isAddingTodo = false

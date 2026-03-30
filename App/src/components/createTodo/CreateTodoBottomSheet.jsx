@@ -18,10 +18,16 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DatePicker from 'react-native-date-picker';
 import { BlurView } from '@react-native-community/blur';
 import { FONTS } from '../../utils/fonts';
+import { useDispatch, useSelector } from 'react-redux';
+import { createTodo } from '../../../features/todos/todoThunks';
+import Spinner from '../Spinner';
+import { formatDateLabel, formatTime12Hour } from '../../utils/getDateTime';
 
 const CreateTodoBottomSheet = ({ btnRef }) => {
   const snapPoints = useMemo(() => ['25%', '50%'], []);
   const { setIsBottomSheetOpen } = useBottomSheet();
+  const {isAddingTodo} = useSelector(state => state.todo);
+  const dispatch = useDispatch();
 
   const [data, setData] = useState({
     todoTilte: '',
@@ -47,6 +53,30 @@ const CreateTodoBottomSheet = ({ btnRef }) => {
       </BottomSheetBackdrop>
     );
   };
+
+
+  const handleSubmit = () => {
+   const formData = {
+      title: data.todoTilte,
+      description: data.todoDescription,
+      date: data.todoDate,
+      time: data.todoTime,
+   };
+
+    dispatch(createTodo(formData)).then((res) => {
+      if (res.meta.requestStatus === 'fulfilled') {
+        setData({
+          todoTilte: '',
+          todoDescription: '',
+          todoDate: null,
+          todoTime: null,
+        });
+        btnRef.current?.close();
+        setIsBottomSheetOpen(false);
+      }
+    });
+
+  }
 
   return (
     <BottomSheet
@@ -118,7 +148,7 @@ const CreateTodoBottomSheet = ({ btnRef }) => {
                 />
                 <Text style={[styles.dateText, { color: data.todoDate ? '#FFFFFF' : 'rgba(255,255,255,0.8)' }]}>
                   {data.todoDate
-                    ? data.todoDate.toLocaleDateString()
+                    ? formatDateLabel(data.todoDate)
                     : 'Select Date'}
                 </Text>
               </Pressable>
@@ -130,7 +160,7 @@ const CreateTodoBottomSheet = ({ btnRef }) => {
                 <MaterialIcons name="timer" size={18} color="#FFFFFF" />
                 <Text style={[styles.dateText, { color: data.todoTime ? '#FFFFFF' : 'rgba(255,255,255,0.8)' }]}>
                   {data.todoTime
-                    ? data.todoTime.toLocaleTimeString()
+                    ? formatTime12Hour(data.todoTime)
                     : 'Select Time'}
                 </Text>
               </Pressable>
@@ -161,11 +191,11 @@ const CreateTodoBottomSheet = ({ btnRef }) => {
             </View>
 
             <View style={styles.buttonContainer}>
-              <Pressable style={styles.cancelButton} onPress={() => btnRef.current?.close()}>
+              <Pressable style={styles.cancelButton} onPress={() => {btnRef.current?.close(); setIsBottomSheetOpen(false);}}>
                 <Text style={[styles.buttonText, { color: colors.bgColor2 }]}>Cancel</Text>
               </Pressable>
-              <Pressable style={styles.button} onPress={() => {}}>
-                <Text style={styles.buttonText}>Create</Text>
+              <Pressable style={isAddingTodo ? styles.buttonDisabled : styles.button} onPress={() => handleSubmit()} disabled={isAddingTodo}>
+                <Text style={styles.buttonText}>{isAddingTodo ? <Spinner /> : 'Create'}</Text>
               </Pressable>
             </View>
           </View>
@@ -204,7 +234,8 @@ const styles = StyleSheet.create({
     height: 42,
     color: colors.white,
     fontFamily: FONTS.REGULAR,
-    fontSize: 16
+    fontSize: 16,
+    marginTop: 5
   },
   textareaContainer: {
     flexDirection: 'row',
@@ -235,7 +266,8 @@ const styles = StyleSheet.create({
   dateText: {
     color: colors.white,
     fontSize: 16,
-    fontFamily: FONTS.REGULAR
+    fontFamily: FONTS.REGULAR,
+    marginTop: 5
   },
   buttonContainer: {
     marginTop: 20,
@@ -258,6 +290,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1
+  },
+  buttonDisabled: {
+    borderRadius: 10,
+    backgroundColor: colors.primary,
+    height: 45,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    opacity: 0.6
   },
   buttonText: {
     fontSize: 16,
